@@ -1,2 +1,4 @@
+.env
+
 /pihole/etc-pihole/
 /pihole/etc-dnsmasq.d/
