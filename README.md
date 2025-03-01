@@ -26,10 +26,10 @@ services:
     ports:
       - ...
     networks:
-      - shared-network
+      - shared_network
 
 networks:
-  shared-network:
+  shared_network:
     external: true
 ```
 
@@ -43,12 +43,12 @@ Main App :
     depends_on:
       - sharedApp:
     networks:
-      - shared-network
-      - mainapp-network
+      - shared_network
+      - mainapp_network
 
 networks:
-  shared-network:
+  shared_network:
     external: true
-  mainapp-network:
+  mainapp_network:
     driver: overlay
 ```

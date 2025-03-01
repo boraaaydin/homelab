@@ -22,11 +22,11 @@ services:
     depends_on:
       - postgres
     networks:
-      - shared-network
+      - shared_network
       - freshrss
 
 networks:
-  shared-network:
+  shared_network:
     external: true
   freshrss:
     driver: overlay

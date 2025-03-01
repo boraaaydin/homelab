@@ -10,12 +10,12 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - shared-network
+      - shared_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
 networks:
-  shared-network:
+  shared_network:
     external: true
 
 volumes:

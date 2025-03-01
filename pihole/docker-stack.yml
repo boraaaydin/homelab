@@ -1,16 +1,19 @@
-pihole:
+version: "3.8"
+
+services:
+  pihole:
     image: pihole/pihole:latest
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
     cap_add:
       - NET_ADMIN
-    depends:
-      traefik
+    depends_on:
+      - traefik
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.pihole.rule=Host(`pihole.${HOSTDOMAIN}`)"
+        - "traefik.http.routers.pihole.rule=Host(`pihole.${HOMEDOMAIN}`)"
         - "traefik.http.routers.pihole.entrypoints=web"
         - "traefik.http.services.pihole.loadbalancer.server.port=80"
     networks:
@@ -20,5 +23,5 @@ pihole:
 networks:
   pihole_network:
     driver: overlay
-  shared-network:
+  shared_network:
     external: true

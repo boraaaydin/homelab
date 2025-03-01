@@ -16,8 +16,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     deploy:
     networks:
-      - shared-network
+      - shared_network
 
 networks:
-  shared-network:
+  shared_network:
     external: true

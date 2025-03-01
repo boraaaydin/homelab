@@ -8,4 +8,4 @@ else
 fi
 
 
-docker network create --driver overlay --attachable shared-network
+docker network create --driver overlay --attachable shared_network
