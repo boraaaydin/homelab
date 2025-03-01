@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:17.2
+    container_name: postgres_17
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - shared-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  shared-network:
+    external: true
+
+volumes:
+  postgres_data:
+

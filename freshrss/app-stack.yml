@@ -1,0 +1,33 @@
+volumes:
+  data:
+  extensions:
+
+services:
+  freshrss:
+    image: freshrss/freshrss:latest
+    hostname: freshrss
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: 10m
+    ports:
+      - "8997:80"
+    volumes:
+      - data:/var/www/FreshRSS/data
+      - extensions:/var/www/FreshRSS/extensions
+    environment:
+      TZ: Europe/Istanbul
+      CRON_MIN: '3,33'
+      TRUSTED_PROXY: 172.16.0.1/12 192.168.0.1/16
+    depends_on:
+      - postgres
+    networks:
+      - shared-network
+      - freshrss
+
+networks:
+  shared-network:
+    external: true
+  freshrss:
+    driver: overlay
+

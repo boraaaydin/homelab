@@ -1,0 +1,14 @@
+services:
+  shellngn-pro:
+    image: shellngn/pro:latest
+    container_name: shellngn-pro
+    ports:
+      - "8999:8080"
+    environment:
+      - HOST=0.0.0.0
+    volumes:
+      - shellngn-data:/home/node/server/data
+
+volumes:
+  shellngn-data:
+
