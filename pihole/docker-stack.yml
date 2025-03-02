@@ -1,14 +1,10 @@
-version: "3.8"
-
 services:
   pihole:
     image: pihole/pihole:latest
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "7001:80/tcp"
-      - "7002:443/tcp"
+      - "67:67/udp"  # DHCP kullanılıyorsa
     environment:
       TZ: 'Europe/Istanbul'
     volumes:
@@ -16,19 +12,16 @@ services:
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
     cap_add:
       - NET_ADMIN
-    depends_on:
-      - traefik
     restart: unless-stopped
     deploy:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.pihole.rule=Host(`pihole.${HOMEDOMAIN}`)"
-        - "traefik.http.routers.pihole.entrypoints=web"
+        - "traefik.http.routers.pihole.entrypoints=web"  # Port 80'den gelen trafik
         - "traefik.http.services.pihole.loadbalancer.server.port=80"
     networks:
       - pihole_network
       - shared_network
-
 networks:
   pihole_network:
     driver: overlay
