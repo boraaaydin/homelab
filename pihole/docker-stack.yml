@@ -17,6 +17,7 @@ services:
       - NET_ADMIN
     depends_on:
       - traefik
+    restart: unless-stopped
     deploy:
       labels:
         - "traefik.enable=true"
