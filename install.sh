@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -f .env ]; then
-    eval $(grep -E '^HOMEDOMAIN=' .env)
+    export $(grep -E '^HOMEDOMAIN=' .env | xargs)
 else
     echo ".env file not found!"
 fi
