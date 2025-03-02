@@ -7,7 +7,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "8998:80/tcp"
+      - "7001:80/tcp"
     environment:
       TZ: 'Europe/Istanbul'
     volumes:
