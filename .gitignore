@@ -2,3 +2,5 @@
 
 /pihole/etc-pihole/
 /pihole/etc-dnsmasq.d/
+
+/traefik/traefik/
