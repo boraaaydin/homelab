@@ -3,8 +3,11 @@
 Installation
 
 ```
-cp .env.example .env
 sh install.sh
+```
+
+```
+echo 'export HOMEDOMAIN="home.YOURDOMAIN.com"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 * Change Hostname in .env file
