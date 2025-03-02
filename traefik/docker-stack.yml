@@ -3,6 +3,7 @@ services:
     image: "traefik:v3.3.4"
     command:
       - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--providers.swarm=true"
       - "--providers.swarm.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
