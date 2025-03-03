@@ -1,0 +1,24 @@
+---
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+log:
+ level: DEBUG
+api:
+  insecure: true
+  dashboard: true
+accessLog:
+  filePath: "/var/log/access.log"
+  format: "json"
+entryPoints:
+  web:
+    address: :80
+    # --> (Optional) Redirect all HTTP to HTTPS
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+    #       scheme: https
+    # <--
+  websecure:
+    address: :443
