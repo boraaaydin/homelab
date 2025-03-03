@@ -13,13 +13,13 @@ services:
     ports:
       - target: 80
         published: 80
-        mode: ingress
+        mode: host
       - target: 443
         published: 443
-        mode: ingress
+        mode: host
       - target: 8080
         published: 8080
-        mode: ingress
+        mode: host
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ".config/traefik.yml:/etc/traefik/traefik.yml:ro"
