@@ -12,7 +12,6 @@ services:
     volumes:
       - './etc-pihole:/etc/pihole'
       - './etc-dnsmasq.d:/etc/dnsmasq.d'
-      - "./config/05-custom-wildcard.conf:/etc/dnsmasq.d/05-custom-wildcard.conf:ro"
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
