@@ -1,0 +1,19 @@
+services:
+  bind9:
+    image: ubuntu/bind9:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/ucp
+    volumes:
+      - /config:/etc/bind/
+      - /cache:/var/cache/bind
+      - /records:/var/lib/bind
+    environment:
+      - TZ=Europe/Istanbul
+      - BIND9_USER=root
+    restart: unless-stopped
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.pihole.rule=Host(`bind9.${HOMEDOMAIN}`)"
+        - "traefik.http.routers.pihole.entrypoints=web"
