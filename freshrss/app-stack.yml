@@ -24,6 +24,12 @@ services:
     networks:
       - shared_network
       - freshrss
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.pihole.rule=Host(`rss.${HOMEDOMAIN}`)"
+        - "traefik.http.routers.pihole.entrypoints=web"  # Port 80'den gelen trafik
+        - "traefik.http.services.pihole.loadbalancer.server.port=80"
 
 networks:
   shared_network:
