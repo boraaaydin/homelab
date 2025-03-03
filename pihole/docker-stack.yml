@@ -5,6 +5,8 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"  # DHCP kullanılıyorsa
+      - "7001:80/tcp"
+      - "7002:443/tcp"
     environment:
       TZ: 'Europe/Istanbul'
     volumes:
