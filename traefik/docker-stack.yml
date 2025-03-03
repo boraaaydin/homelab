@@ -1,15 +1,6 @@
 services:
   traefik:
     image: "traefik:v3.3.4"
-    command:
-      - "--api.dashboard=true"
-      - "--api.insecure=true"
-      - "--providers.swarm=true"
-      - "--providers.swarm.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"  # Port 80'e gelen HTTP trafiği
-      - "--entrypoints.websecure.address=:443" # Port 443'e gelen HTTPS trafiği
-      - "--entrypoints.traefik.address=:8080"  # Dashboard için ayrı port
-      - "--ping"
     ports:
       - target: 80
         published: 80
