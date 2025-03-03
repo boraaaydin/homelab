@@ -22,7 +22,7 @@ services:
         mode: host
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ".config/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "./data/log:/var/log"
     deploy:
       mode: global
