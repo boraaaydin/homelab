@@ -22,3 +22,9 @@ entryPoints:
     # <--
   websecure:
     address: :443
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false  # <-- (Optional) Change this to true if you want to expose all services
+    # Specify discovery network - This ensures correct name resolving and possible issues with containers, that are in multiple networks.
+    # E.g. Database container in a separate network and a container in the frontend and database network.
