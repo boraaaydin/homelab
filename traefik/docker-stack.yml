@@ -22,8 +22,8 @@ services:
         mode: host
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./etc-traefik:/etc/traefik"
-      - "./var-log:/var/log"
+      - "./data/etc:/etc/traefik"
+      - "./data/log:/var/log"
     deploy:
       mode: global
     networks:
