@@ -17,3 +17,5 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.pihole.rule=Host(`bind9.${HOMEDOMAIN}`)"
         - "traefik.http.routers.pihole.entrypoints=web"
+    networks:
+      - shared_network
