@@ -11,6 +11,9 @@
 
 ## Traefik
 - curl http://localhost:8080/api/rawdata
+- docker exec -it $(docker ps -q --filter name=traefik) sh
+* traefik --api
+
 
 ## Networking
 - nslookup pihole.home.boraaydin.com 192.168.68.62

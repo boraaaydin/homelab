@@ -22,6 +22,7 @@ entryPoints:
     # <--
   websecure:
     address: :443
+  #uncomment if not needed like production
   traefik:
     address: ":8080"
 providers:

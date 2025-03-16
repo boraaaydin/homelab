@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    ports:
+      - "5678:5678"
+    labels:
+      - traefik.enable=true
+      # - traefik.http.routers.n8n.rule=Host(`n8n.myhome.com`)
+      - 'traefik.http.routers.n8n.rule=Host(`n8n.${HOMEDOMAIN}`)'
+      - traefik.http.routers.n8n.entrypoints=web 
+    environment:
+      - N8N_HOST=${HOMEDOMAIN}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://${HOMEDOMAIN}/
+      - GENERIC_TIMEZONE=Europe/Istanbul
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n_network
+      - shared_network
+
+networks:
+  n8n_network:
+    driver: overlay
+  shared_network:
+    external: true
+
+volumes:
+  n8n_data:
+
+
+
