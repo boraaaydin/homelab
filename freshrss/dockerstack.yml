@@ -27,7 +27,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.pihole.rule=Host(`rss.${HOMEDOMAIN}`)"
+        - 'traefik.http.routers.n8n.rule=Host(`rss.${CUSTOMDOMAIN}`)'
         - "traefik.http.routers.pihole.entrypoints=web"  # Port 80'den gelen trafik
 
 networks:

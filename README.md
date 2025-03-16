@@ -4,7 +4,7 @@
 
 ```
 sh install.sh
-echo 'export HOMEDOMAIN="home.YOURDOMAIN.com"' >> ~/.bashrc && source ~/.bashrc
+echo 'export CUSTOMDOMAIN="home.YOURDOMAIN.com"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 * Go to Any App Directory  

@@ -15,7 +15,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.pihole.rule=Host(`bind9.${HOMEDOMAIN}`)"
+        - 'traefik.http.routers.n8n.rule=Host(`bind9.${CUSTOMDOMAIN}`)'
         - "traefik.http.routers.pihole.entrypoints=web"
     networks:
       - shared_network

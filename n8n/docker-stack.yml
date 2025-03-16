@@ -7,15 +7,14 @@ services:
       - "5678:5678"
     labels:
       - traefik.enable=true
-      # - traefik.http.routers.n8n.rule=Host(`n8n.myhome.com`)
-      - 'traefik.http.routers.n8n.rule=Host(`n8n.${HOMEDOMAIN}`)'
+      - 'traefik.http.routers.n8n.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
       - traefik.http.routers.n8n.entrypoints=web 
     environment:
-      - N8N_HOST=${HOMEDOMAIN}
+      - N8N_HOST=${CUSTOMDOMAIN}
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=http://${HOMEDOMAIN}/
+      - WEBHOOK_URL=http://${CUSTOMDOMAIN}/
       - GENERIC_TIMEZONE=Europe/Istanbul
     volumes:
       - n8n_data:/home/node/.n8n
