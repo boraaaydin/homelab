@@ -5,29 +5,40 @@ global:
 log:
  level: DEBUG
 api:
-  insecure: true
-  dashboard: true
+  insecure: false
+  dashboard: false
+  debug: false
 accessLog:
   filePath: "/var/log/access.log"
   format: "json"
 entryPoints:
   web:
     address: :80
-    # --> (Optional) Redirect all HTTP to HTTPS
-    # http:
-    #   redirections:
-    #     entryPoint:
-    #       to: websecure
-    #       scheme: https
-    # <--
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
   websecure:
     address: :443
-  #uncomment if not needed like production
-  traefik:
-    address: ":8080"
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false  # <-- (Optional) Change this to true if you want to expose all services
     # Specify discovery network - This ensures correct name resolving and possible issues with containers, that are in multiple networks.
     # E.g. Database container in a separate network and a container in the frontend and database network.
+    network: shared_network
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      # email: boraaaydin@gmail.com
+      storage: /var/traefik/certs/cloudflare-acme.json
+      # caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging (for testing)
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 10 # Optional, adjust delay if necessary
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"

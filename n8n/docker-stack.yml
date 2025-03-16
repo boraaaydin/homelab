@@ -1,4 +1,4 @@
-version: "3.7"
+---
 services:
 
   n8n:
@@ -7,8 +7,21 @@ services:
       - "5678:5678"
     labels:
       - traefik.enable=true
-      - 'traefik.http.routers.n8n.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
-      - traefik.http.routers.n8n.entrypoints=web 
+      - traefik.http.routers.n8n-http.entrypoints=web
+      - 'traefik.http.routers.n8n-http.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
+      - traefik.http.routers.n8n-https.entrypoints=websecure 
+      - 'traefik.http.routers.n8n-https.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
+      - traefik.http.routers.n8n-https.tls=true
+      - traefik.http.routers.n8n-https.tls.certresolver=cloudflare
+      # - traefik.http.middlewares.n8n-https.headers.SSLRedirect=true
+      # - traefik.http.middlewares.n8n-https.headers.browserXSSFilter=true
+      # - traefik.http.middlewares.n8n-https.headers.contentTypeNosniff=true
+      # - traefik.http.middlewares.n8n-https.headers.forceSTSHeader=true
+      # - traefik.http.middlewares.n8n-https.headers.STSIncludeSubdomains=true
+
+      # - traefik.http.middlewares.n8n-https.headers.STSSeconds=315360000
+      # - 'traefik.http.middlewares.n8n-https.headers.SSLHost=${CUSTOMDOMAIN}'
+      # - traefik.http.middlewares.n8n-https.headers.STSPreload=true
     environment:
       - N8N_HOST=${CUSTOMDOMAIN}
       - N8N_PORT=5678
@@ -19,12 +32,9 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
-      - n8n_network
       - shared_network
 
 networks:
-  n8n_network:
-    driver: overlay
   shared_network:
     external: true
 

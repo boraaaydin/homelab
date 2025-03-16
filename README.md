@@ -4,8 +4,9 @@
 
 ```
 sh install.sh
-echo 'export CUSTOMDOMAIN="home.YOURDOMAIN.com"' >> ~/.bashrc && source ~/.bashrc
 ```
+
+* [For SSL](/docs/Cloudflare.md)
 
 * Go to Any App Directory  
 ```

@@ -19,19 +19,31 @@ else
     echo "Docker network 'shared_network' zaten mevcut."
 fi
 
-# CUSTOMDOMAIN değişkenini .env dosyasından al ve ~/.bashrc'de güncelle
-if [ -n "$CUSTOMDOMAIN" ]; then
-    # Eğer .bashrc'de CUSTOMDOMAIN zaten varsa, eski satırı kaldır
-    sed -i '/export CUSTOMDOMAIN=/d' ~/.bashrc
+# Çevresel değişkeni .env dosyasından al ve ~/.bashrc dosyasına ekle
+update_env_variable() {
+    local var_name=$1
 
-    # Yeni CUSTOMDOMAIN değerini ekle
-    echo "export CUSTOMDOMAIN=\"$CUSTOMDOMAIN\"" >> ~/.bashrc
+    # .env dosyasından değeri al
+    local var_value=$(grep -E "^$var_name=" .env | cut -d '=' -f2-)
 
-    # Yeni ayarları yükle
-    source ~/.bashrc
+    if [ -n "$var_value" ]; then
+        # Eğer .bashrc dosyasında değişken zaten varsa, eski satırı kaldır
+        sed -i "/export $var_name=/d" ~/.bashrc
 
-    echo "CUSTOMDOMAIN değişkeni güncellendi: $CUSTOMDOMAIN"
-else
-    echo "Hata: .env dosyasında CUSTOMDOMAIN değişkeni tanımlı değil!"
-    exit 1
-fi
+        # Yeni değişkeni .bashrc dosyasına ekle
+        echo "export $var_name=\"$var_value\"" >> ~/.bashrc
+
+        # Yeni ayarları yükle
+        source ~/.bashrc
+
+        echo "$var_name değişkeni güncellendi: $var_value"
+    else
+        echo "Hata: .env dosyasında $var_name değişkeni tanımlı değil!"
+        exit 1
+    fi
+}
+
+# Çevresel değişkenlerin güncellenmesi
+update_env_variable "CUSTOMDOMAIN"
+update_env_variable "CLOUDFLARE_API_EMAIL"
+update_env_variable "CLOUDFLARE_DNS_API_TOKEN"
