@@ -1,7 +1,9 @@
 #!/bin/bash
 
-mkdir -p data/etc
-mkdir -p data/certs
-mkdir -p data/log
+BASE_DIR="$(dirname "$(readlink -f "$0")")"
+
+mkdir -p "$BASE_DIR/data/etc"
+mkdir -p "$BASE_DIR/data/certs"
+mkdir -p "$BASE_DIR/data/log"
 
 docker stack deploy --compose-file docker-stack.yml traefik

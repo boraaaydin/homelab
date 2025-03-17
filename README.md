@@ -3,12 +3,12 @@
 * Installation
 
 ```
-sh install.sh
+bash install.sh 
 ```
 
 * [For SSL](/docs/Cloudflare.md)
 
 * Go to Any App Directory  
 ```
-sh deploy.sh
+bash deploy.sh
 ```
