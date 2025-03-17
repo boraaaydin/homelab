@@ -56,3 +56,8 @@ update_env_variable "CUSTOMDOMAIN"
 update_env_variable "CLOUDFLARE_API_EMAIL"
 update_env_variable "CLOUDFLARE_DNS_API_TOKEN"
 
+
+mkdir -p traefik/data/etc
+mkdir -p traefik/data/log
+mkdir -p traefik/data/certs
+
