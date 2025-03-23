@@ -34,11 +34,12 @@ certificatesResolvers:
     acme:
       # email: boraaaydin@gmail.com
       storage: /var/traefik/certs/cloudflare-acme.json
-      # caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging (for testing)
+      caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
+      # caServer: https://acme-v02.api.letsencrypt.org/directory # production
       dnsChallenge:
         provider: cloudflare
-        delayBeforeCheck: 10 # Optional, adjust delay if necessary
+        propagation:
+          delayBeforeChecks: 30 # Optional, adjust delay if necessary
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
