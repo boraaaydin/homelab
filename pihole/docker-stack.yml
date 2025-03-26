@@ -17,10 +17,15 @@ services:
     restart: unless-stopped
     deploy:
       labels:
-        - "traefik.enable=true"
-        - 'traefik.http.routers.n8n.rule=Host(`pihole.${CUSTOMDOMAIN}`)'
-        - "traefik.http.routers.pihole.entrypoints=web"  # Port 80'den gelen trafik
-        - "traefik.http.services.pihole.loadbalancer.server.port=80"
+        - traefik.enable=true
+        - 'traefik.http.routers.app.rule=Host(`pihole.${CUSTOMDOMAIN}`)'
+        - traefik.http.routers.app.entrypoints=web   #Port 80'den gelen trafik
+        - traefik.http.services.app.loadbalancer.server.port=80
+        - 'traefik.http.routers.app-https.rule=Host(`pihole.${CUSTOMDOMAIN}`)'
+        - traefik.http.routers.app-https.entrypoints=websecure  # Port 80'den gelen trafik
+        - traefik.http.services.app-https.loadbalancer.server.port=80
+        - traefik.http.routers.app-https.tls=true
+        - traefik.http.routers.app-https.tls.certresolver=cloudflare
     networks:
       - pihole_network
       - shared_network
