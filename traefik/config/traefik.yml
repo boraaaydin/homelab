@@ -3,7 +3,7 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 log:
- level: DEBUG
+  level: DEBUG
 api:
   insecure: false
   dashboard: false
@@ -32,10 +32,10 @@ providers:
 certificatesResolvers:
   cloudflare:
     acme:
-      # email: boraaaydin@gmail.com
+      email: boraaaydin@gmail.com
       storage: /var/traefik/certs/cloudflare-acme.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
-      # caServer: https://acme-v02.api.letsencrypt.org/directory # production
+      # caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       dnsChallenge:
         provider: cloudflare
         propagation:

@@ -1,0 +1,50 @@
+services:
+  traefik:
+    container_name: traefik
+    restart: unless-stopped
+    image: "traefik:v3.3.4"
+    security_opt:
+      - no-new-privileges
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    environment:
+      CF_NDS_API_TOKEN_FILE: /run/secrets/cf_api_token #using _FILE for secrets
+      CF_DNS_API_TOKEN: ${CLOUDFLARE_DNS_API_TOKEN}
+      CF_API_EMAIL: ${CLOUDFLARE_API_EMAIL}
+    # secrets:
+    #   - cf_api_token
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./config/traefik-test .yml:/etc/traefik/traefik.yml:ro
+      - ./config/traefik-test.yml:/traefik.yml:ro
+      - ./data/log:/var/log
+      - ./data/certs/:/var/traefik/certs/:rw
+    networks:
+      - shared_network
+    env_file: .env
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.traefik.entrypoints=web'
+      - 'traefik.http.routers.traefik.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.traefik.rule=Host(`traefik-dashboard.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.traefik.tls.domains[0].main=${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.traefik.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.traefik.service=api@internal'
+      - 'traefik.http.routers.traefik-secure.entrypoints=websecure'
+      - 'traefik.http.routers.traefik-secure.tls=true'
+      - 'traefik.http.routers.traefik-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.traefik-secure.tls.domains[0].main=${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.traefik-secure.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.traefik-secure.service=api@internal'
+
+# secrets:
+#   cf_api_token:
+#     file: ./cf_api_token.txt
+
+networks:
+  shared_network:
+    external: true

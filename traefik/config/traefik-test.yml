@@ -13,10 +13,18 @@ accessLog:
 entryPoints:
   web:
     address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
   websecure:
     address: :443
   traefik:
     address: ":8080"
+serverTransport:
+  insecureSkipVerify: true # <-- (Optional) Disables SSL certificate verification between your traefik instance and your backend
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
@@ -24,3 +32,17 @@ providers:
     # Specify discovery network - This ensures correct name resolving and possible issues with containers, that are in multiple networks.
     # E.g. Database container in a separate network and a container in the frontend and database network.
     network: shared_network
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: boraaaydin@gmail.com
+      storage: /var/traefik/certs/cloudflare-acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: cloudflare
+        disablePropagationCheck: true
+        delayBeforeCheck: 60s
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
