@@ -10,7 +10,7 @@ services:
       - "443:443"
       # - "8080:8080"
     environment:
-      CF_NDS_API_TOKEN_FILE: /run/secrets/cf_api_token #using _FILE for secrets
+      # CF_NDS_API_TOKEN_FILE: /run/secrets/cf_api_token #using _FILE for secrets
       CF_DNS_API_TOKEN: ${CLOUDFLARE_DNS_API_TOKEN}
       CF_API_EMAIL: ${CLOUDFLARE_API_EMAIL}
     # secrets:
