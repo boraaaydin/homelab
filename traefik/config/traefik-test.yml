@@ -3,10 +3,11 @@ global:
   checkNewVersion: false
   sendAnonymousUsage: false
 log:
- level: DEBUG
+  level: DEBUG
 api:
   insecure: true
   dashboard: true
+  debug: true
 accessLog:
   filePath: "/var/log/access.log"
   format: "json"
@@ -18,7 +19,6 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
-          permanent: true
   websecure:
     address: :443
   traefik:
@@ -42,7 +42,8 @@ certificatesResolvers:
       dnsChallenge:
         provider: cloudflare
         disablePropagationCheck: true
-        delayBeforeCheck: 60s
+        propagation:
+          delayBeforeChecks: 60s # Optional, adjust delay if necessary
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
