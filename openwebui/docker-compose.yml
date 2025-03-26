@@ -29,26 +29,27 @@ services:
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - CUSTOMDOMAIN=${CUSTOMDOMAIN} #unnecessary?
+    env_file: .env 
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
     networks:
       - shared_network
-    deploy:
-      labels:
-        - 'traefik.enable=true'
-        - 'traefik.http.routers.openwebui.entrypoints=web'
-        - 'traefik.http.routers.openwebui.rule=Host(`openwebui.${CUSTOMDOMAIN}`)'
-        - 'traefik.http.routers.openwebui.tls.domains[0].main=${CUSTOMDOMAIN}'
-        - 'traefik.http.routers.openwebui.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
-        - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
-        - 'traefik.http.routers.openwebui-https.rule=Host(`openwebui.${CUSTOMDOMAIN}`)'
-        - 'traefik.http.routers.openwebui-https.tls.domains[0].main=${CUSTOMDOMAIN}'
-        - 'traefik.http.routers.openwebui-https.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
-        - 'traefik.http.routers.openwebui-https.entrypoints=websecure'
-        - 'traefik.http.routers.openwebui-https.tls=true'
-        - 'traefik.http.routers.openwebui-https.tls.certresolver=cloudflare'
-        - 'traefik.http.services.openwebui-https.loadbalancer.server.port=8080'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.openwebui.entrypoints=web'
+      - 'traefik.http.routers.openwebui.rule=Host(`openwebui.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.openwebui.tls.domains[0].main=${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.openwebui.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
+      - 'traefik.http.services.openwebui.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.openwebui-https.rule=Host(`openwebui.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.openwebui-https.tls.domains[0].main=${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.openwebui-https.tls.domains[0].sans=*.${CUSTOMDOMAIN}'
+      - 'traefik.http.routers.openwebui-https.entrypoints=websecure'
+      - 'traefik.http.routers.openwebui-https.tls=true'
+      - 'traefik.http.routers.openwebui-https.tls.certresolver=cloudflare'
+      - 'traefik.http.services.openwebui-https.loadbalancer.server.port=8080'
 
 volumes:
   ollama: {}
