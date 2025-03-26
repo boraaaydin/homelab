@@ -2,7 +2,7 @@ services:
   ollama:
     container_name: ollama
     volumes:
-      - ollama:/root/.ollama
+      - "${OLLAMA_FOLDER_PATH}:/root/.ollama"
     pull_policy: always
     tty: true
     restart: unless-stopped
