@@ -1,16 +1,13 @@
 # Home Stack
 
-
-
-* Installation
-
-```
-sh install.sh
-```
-
 * [Create token in Cloudflare](/docs/Cloudflare.md)
 
+* Create .env file from .env.example under traefik folder
+
 * Go to Any App Directory  
+
+* Create .env file from .env.example
+
 ```
 sh deploy.sh
 ```

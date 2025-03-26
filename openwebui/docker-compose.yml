@@ -12,11 +12,11 @@ services:
 
   open-webui:
     container_name: open-webui
-    build:
-      context: .
-      args:
-        OLLAMA_BASE_URL: '/ollama'
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   args:
+    #     OLLAMA_BASE_URL: '/ollama'
+    #   dockerfile: Dockerfile
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG}
     volumes:
       - open-webui:/app/backend/data
