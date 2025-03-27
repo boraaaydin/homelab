@@ -1,0 +1,8 @@
+## About Project
+- This project is launching open source apps with docker compose
+- Cloudflare is responsible to create ssl certificate with help of letsencrypt
+
+## Conventions
+- Add healthcheck in every docker compose with curl
+- every app will have .env file
+- each app should be under network name shared_network  

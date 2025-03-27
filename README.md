@@ -4,6 +4,8 @@
 
 * Create .env file from .env.example under traefik folder
 
+* [Add DNS record](/docs/DNS.md)
+
 * Go to Any App Directory  
 
 * Create .env file from .env.example
