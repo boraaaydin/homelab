@@ -17,3 +17,5 @@ sh deploy.sh
 | Application | Description |
 | -------- | ------- |
 | OpenWebUI | AI Chat Interface which can be used with different LLMs |
+| FreshRSS | RSS Reader |
+| Postgresql | Database | 

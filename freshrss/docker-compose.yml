@@ -1,0 +1,47 @@
+services:
+  freshrss:
+    container_name: freshrss
+    image: freshrss/freshrss:${DOCKER_TAG}
+    hostname: freshrss
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: 10m
+    ports:
+      - "3002:80"
+    volumes:
+      - data:/var/www/FreshRSS/data
+      - extensions:/var/www/FreshRSS/extensions
+    environment:
+      TZ: Europe/Istanbul
+      CRON_MIN: '3,33'
+      TRUSTED_PROXY: 172.16.0.1/12 192.168.0.1/16
+    # depends_on:
+    #   - postgres_17
+    networks:
+      - shared_network
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.freshrss.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.freshrss.entrypoints=web'
+      - 'traefik.http.routers.freshrss.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.freshrss-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.freshrss-secure.entrypoints=websecure'
+      - 'traefik.http.routers.freshrss-secure.tls=true'
+      - 'traefik.http.routers.freshrss-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.freshrss.loadbalancer.server.port=80'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+volumes:
+  data:
+  extensions:
+
+networks:
+  shared_network:
+    external: true
+

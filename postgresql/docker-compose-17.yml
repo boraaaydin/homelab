@@ -1,19 +1,35 @@
 services:
-  postgres:
+  postgres_17:
     image: postgres:17.2
     container_name: postgres_17
     restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     networks:
       - shared_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.app.entrypoints=web'
+      - 'traefik.http.routers.app.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.app-secure.entrypoints=websecure'
+      - 'traefik.http.routers.app-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.app-secure.tls=true'
+      - 'traefik.http.routers.app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.services.app.loadbalancer.server.port=8080'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.routers.app.middlewares=redirect-to-https'
+      
 networks:
   shared_network:
     external: true
