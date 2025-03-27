@@ -3,6 +3,7 @@
 - Cloudflare is responsible to create ssl certificate with help of letsencrypt
 
 ## Conventions
+- Use English when commiting files
 - Add healthcheck in every docker compose with curl
 - every app will have .env file
 - each app should be under network name shared_network  
