@@ -1,5 +1,7 @@
 # Home Stack
 
+* Install Docker
+
 * [Create token in Cloudflare](/docs/Cloudflare.md)
 
 * Create .env file from .env.example under traefik folder
@@ -16,6 +18,7 @@ sh deploy.sh
 
 | Application | Description |
 | -------- | ------- |
-| OpenWebUI | AI Chat Interface which can be used with different LLMs |
+| Traefik | Reverse Proxy |
+| OpenWebUI | AI Chat Interface which can be used with multiple LLMs |
 | FreshRSS | RSS Reader |
 | Postgresql | Database | 
