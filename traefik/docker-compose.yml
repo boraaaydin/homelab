@@ -16,8 +16,8 @@ services:
     # secrets:
     #   - cf_api_token
     volumes:
-      - ./config/traefik.yml:/traefik.yml:ro #Disable Dashboard with prod config #etc/traefik/traefik.yml:ro?
-      # - ./config/traefik-test.yml:/traefik.yml:ro #Enable Dashboard with test config
+      # - ./config/traefik.yml:/traefik.yml:ro #Disable Dashboard with prod config #etc/traefik/traefik.yml:ro?
+      - ./config/traefik-test.yml:/traefik.yml:ro #Enable Dashboard with test config
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/log:/var/log
