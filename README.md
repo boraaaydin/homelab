@@ -14,8 +14,8 @@ Easily deploy open-source applications locally or on a server with automated SSL
 
 1. **Install Docker**  
 2. **Configure Traefik:**  
-   - Copy `.env.example` to `.env` in the `traefik` folder  
    - Follow [this guide](/docs/Cloudflare.md) to create a Cloudflare token  
+   - Copy `.env.example` to `.env` in the `traefik` folder  
 3. **Set up DNS:**  
    - Add the necessary records using [this guide](/docs/DNS.md)  
 4. **Deploy an Application:**  

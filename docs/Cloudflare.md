@@ -1,10 +1,11 @@
 # Getting Token From Cloudflare
 
-- Navigate to cloudflare
-https://dash.cloudflare.com/profile/api-tokens
+- Navigate to [Cloudflare Profile](https://dash.cloudflare.com/profile/api-tokens)
 - Create Token
-- Edit Zone DNS -> Use template
-- Select specific domain from Zone Resources 
+- Create Custom Token
+- Select Permissions 
+    - Zone:Zone:Read
+    - Zone:DNS:Edit
+- Include and select specific zone from Zone Resources 
 - Continue to Summary
 - Create Token
-- Copy and Paste this token as CLOUDFLARE_DNS_API_TOKEN in .env file
