@@ -2,9 +2,8 @@
 
 * Install Docker
 
-* [Create token in Cloudflare](/docs/Cloudflare.md)
-
 * Create .env file from .env.example under traefik folder
+    * How to [create token](/docs/Cloudflare.md) in Cloudflare
 
 * [Add DNS record](/docs/DNS.md)
 
