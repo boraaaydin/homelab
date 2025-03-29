@@ -1,9 +1,1 @@
 .env
-
-/pihole/etc-pihole/
-/pihole/etc-dnsmasq.d/
-
-/traefik/data/
-
-/bind9/cache/
-/bind9/records/
