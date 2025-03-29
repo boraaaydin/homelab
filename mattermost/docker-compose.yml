@@ -1,15 +1,14 @@
-# https://docs.docker.com/compose/environment-variables/
 services:
   mattermost:
     container_name: mattermost
-    # depends_on:
-    #   - postgres
     image: mattermost/${MATTERMOST_IMAGE}:${MATTERMOST_IMAGE_TAG}
     restart: ${RESTART_POLICY}
     security_opt:
       - no-new-privileges:true
     pids_limit: 200
     read_only: ${MATTERMOST_CONTAINER_READONLY}
+    # ports:
+    #   - "8065:8065"
     tmpfs:
       - /tmp
     volumes:
@@ -48,7 +47,7 @@ services:
       - 'traefik.http.routers.mattermost-secure.tls=true'
       - 'traefik.http.routers.mattermost-secure.tls.certresolver=cloudflare'
       # Service
-      - 'traefik.http.services.mattermost.loadbalancer.server.port=80'
+      - 'traefik.http.services.mattermost.loadbalancer.server.port=8065'
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
@@ -58,14 +57,3 @@ services:
 networks:
   shared_network:
     external: true
-
-# If you use rolling image tags and feel lucky watchtower can automatically pull new images and
-# instantiate containers from it. https://containrrr.dev/watchtower/
-# Please keep in mind watchtower will have access on the docker socket. This can be a security risk.
-#
-#  watchtower:
-#    container_name: watchtower
-#    image: containrrr/watchtower:latest
-#    restart: unless-stopped
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock

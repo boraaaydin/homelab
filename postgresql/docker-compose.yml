@@ -1,7 +1,7 @@
 services:
-  postgres_17:
+  postgres:
     image: postgres:17.2
-    container_name: postgres_17
+    container_name: postgres
     restart: always
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]

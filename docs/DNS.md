@@ -1,10 +1,7 @@
+## Replace domain placeholder and run script
 
-## For Mac:
+- For Mac:
 `
-sudo vim /private/etc/hosts
-`
-
-### add record with replacing placeholders
-`
-127.0.0.1	domainprefix.customdomain
+echo "127.0.0.1 domainprefix.customdomain" | sudo tee -a /private/etc/hosts
+cat /private/etc/hosts
 `

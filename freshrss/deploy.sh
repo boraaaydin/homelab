@@ -2,7 +2,7 @@
 
 docker compose -f ../traefik/docker-compose.yml up -d
 
-# docker compose -f ../postgresql/docker-compose-17.yml up -d
+# docker compose -f ../postgresql/docker-compose.yml up -d
 
 # # PostgreSQL'in hazır olmasını bekle
 # echo "PostgreSQL'in hazır olması bekleniyor..."
