@@ -22,3 +22,4 @@ sh deploy.sh
 | OpenWebUI | AI Chat Interface which can be used with multiple LLMs |
 | FreshRSS | RSS Reader |
 | Postgresql | Database | 
+| Mattermost | Slack alternative |
