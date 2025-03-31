@@ -2,6 +2,8 @@ services:
   mattermost:
     container_name: mattermost
     image: mattermost/${MATTERMOST_IMAGE}:${MATTERMOST_IMAGE_TAG}
+    ports:
+      - "${HOST_PORT}:${MATTERMOST_PORT}"
     restart: ${RESTART_POLICY}
     security_opt:
       - no-new-privileges:true

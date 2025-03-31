@@ -9,6 +9,7 @@
 - each app should be under network name shared_network  
 - add container_name label with proper label.
 - add 'pids_limit: 100' labels on every docker compose yml. 
+- HOST_PORT should be added to every docker compose yml file.
 - add traefik labels on every docker compose yml file.
 `
     labels:

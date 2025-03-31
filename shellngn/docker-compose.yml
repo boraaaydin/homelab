@@ -2,8 +2,8 @@ services:
   shellngn:
     image: shellngn/pro:${DOCKER_IMAGE_TAG}
     container_name: shellngn-pro
-    # ports:
-    #   - "8999:8080"
+    ports:
+      - "${HOST_PORT}:8080"
     environment:
       - HOST=0.0.0.0
     volumes:
