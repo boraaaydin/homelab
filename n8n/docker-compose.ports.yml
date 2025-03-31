@@ -1,0 +1,4 @@
+services:
+  n8n:
+    ports:
+      - "${HOST_PORT}:${N8N_PORT}"
