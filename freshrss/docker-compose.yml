@@ -2,8 +2,6 @@ services:
   freshrss:
     container_name: freshrss
     image: freshrss/freshrss:${DOCKER_TAG}
-    ports:
-      - "${HOST_PORT}:80"
     hostname: freshrss
     restart: unless-stopped
     logging:
