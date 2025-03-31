@@ -17,7 +17,7 @@ GREEN := \033[0;32m
 RED := \033[0;31m
 NC := \033[0m
 
-.PHONY: all install network help
+.PHONY: all install network help stop clean
 
 # Default target
 all: help
@@ -27,6 +27,7 @@ help:
 	@echo "Available commands:"
 	@echo "  make install    - Install and setup Docker network"
 	@echo "  make network    - Create Docker network"
+	@echo "  make clean     - Stop and remove all project containers"
 
 # Check Docker installation
 check-docker:
@@ -51,12 +52,7 @@ network: check-docker
 	@echo "Checking Docker network..."
 	@if ! $(DOCKER) network ls | grep -q "$(NETWORK_NAME)"; then \
 		echo "Creating $(NETWORK_NAME)..."; \
-		if [ "$(DETECTED_OS)" = "Windows" ]; then \
-			$(DOCKER) network create --driver bridge $(NETWORK_NAME) || \
-			$(DOCKER) network create --driver overlay --attachable $(NETWORK_NAME); \
-		else \
-			$(DOCKER) network create --driver overlay --attachable $(NETWORK_NAME); \
-		fi; \
+		$(DOCKER) network create --driver bridge $(NETWORK_NAME); \
 		echo "$(GREEN)Network created successfully.$(NC)"; \
 	else \
 		echo "$(GREEN)Network already exists.$(NC)"; \
@@ -64,4 +60,17 @@ network: check-docker
 
 # Install dependencies
 install: check-docker check-compose network
-	@echo "$(GREEN)Installation completed.$(NC)" 
+	@echo "$(GREEN)Installation completed.$(NC)"
+
+# Stop and remove all project containers
+clean:
+	@echo "Stopping and removing all project containers..."
+	@for dir in */; do \
+		if [ -f "$$dir/docker-compose.yml" ]; then \
+			echo "Processing $$dir..."; \
+			cd "$$dir" && $(DOCKER_COMPOSE) down --remove-orphans; \
+			cd ..; \
+			echo "$(GREEN)Cleaned $$dir$(NC)"; \
+		fi \
+	done
+	@echo "$(GREEN)All project containers have been stopped and removed.$(NC)" 
