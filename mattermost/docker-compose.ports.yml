@@ -1,0 +1,4 @@
+services:
+  mattermost:
+    ports:
+      - "${HOST_PORT}:8065" 
