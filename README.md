@@ -15,6 +15,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 ### Prerequisites
 - Docker and Docker Compose installed
 - A Cloudflare account
+- Install [Make](https://gnuwin32.sourceforge.net/packages/make.htm) if your platform is windows
 
 ### Installation Steps
 
@@ -35,7 +36,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 
 3. **Run Installation**
    ```bash
-   sh install.sh
+   make install
    ```
 
 4. **Deploy Applications**
@@ -45,7 +46,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
      ```bash
      cp .env.example .env
      # Configure application-specific settings
-     sh deploy.sh
+     make up
      ```
 
 ## 📦 Available Applications
