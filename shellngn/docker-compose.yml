@@ -2,8 +2,6 @@ services:
   shellngn:
     image: shellngn/pro:${DOCKER_IMAGE_TAG}
     container_name: shellngn-pro
-    ports:
-      - "${HOST_PORT}:8080"
     environment:
       - HOST=0.0.0.0
     volumes:
@@ -33,7 +31,6 @@ services:
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
-
 
 volumes:
   shellngn-data:

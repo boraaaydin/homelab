@@ -3,8 +3,6 @@ services:
     image: docker.n8n.io/n8nio/n8n
     container_name: n8n
     restart: always
-    ports:
-      - "${HOST_PORT}:${N8N_PORT}"
     labels:
       - 'traefik.enable=true'
       # HTTP Router

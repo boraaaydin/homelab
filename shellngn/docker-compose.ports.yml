@@ -1,0 +1,4 @@
+services:
+  shellngn:
+    ports:
+      - "${HOST_PORT}:8080" 
