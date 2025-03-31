@@ -6,29 +6,28 @@ services:
     ports:
       - "5678:5678"
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n-http.entrypoints=web
-      - 'traefik.http.routers.n8n-http.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
-      - traefik.http.routers.n8n-https.entrypoints=websecure 
-      - 'traefik.http.routers.n8n-https.rule=Host(`n8n.${CUSTOMDOMAIN}`)'
-      - traefik.http.routers.n8n-https.tls=true
-      - traefik.http.routers.n8n-https.tls.certresolver=cloudflare
-      # - traefik.http.middlewares.n8n-https.headers.SSLRedirect=true
-      # - traefik.http.middlewares.n8n-https.headers.browserXSSFilter=true
-      # - traefik.http.middlewares.n8n-https.headers.contentTypeNosniff=true
-      # - traefik.http.middlewares.n8n-https.headers.forceSTSHeader=true
-      # - traefik.http.middlewares.n8n-https.headers.STSIncludeSubdomains=true
-
-      # - traefik.http.middlewares.n8n-https.headers.STSSeconds=315360000
-      # - 'traefik.http.middlewares.n8n-https.headers.SSLHost=${CUSTOMDOMAIN}'
-      # - traefik.http.middlewares.n8n-https.headers.STSPreload=true
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.n8n.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.n8n.entrypoints=web'
+      - 'traefik.http.routers.n8n.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.n8n-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.n8n-secure.entrypoints=websecure'
+      - 'traefik.http.routers.n8n-secure.tls=true'
+      - 'traefik.http.routers.n8n-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.n8n.loadbalancer.server.port=5678'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
     environment:
-      - N8N_HOST=${CUSTOMDOMAIN}
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
+      - N8N_HOST=${DOMAIN_PREFIX}.${CUSTOMDOMAIN}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
       - NODE_ENV=production
-      - WEBHOOK_URL=http://${CUSTOMDOMAIN}/
-      - GENERIC_TIMEZONE=Europe/Istanbul
+      - WEBHOOK_URL=https://${DOMAIN_PREFIX}.${CUSTOMDOMAIN}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
     volumes:
       - n8n_data:/home/node/.n8n
     networks:

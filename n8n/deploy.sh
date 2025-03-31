@@ -1,5 +1,5 @@
 #!/bin/bash
 
-docker stack deploy --compose-file ../traefik/docker-stack.yml traefik
+docker compose -f ../traefik/docker-compose.yml up -d
 
-docker stack deploy --compose-file docker-stack.yml n8n
+docker compose -f docker-compose.yml up -d

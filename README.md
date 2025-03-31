@@ -16,15 +16,14 @@ Easily deploy open-source applications locally or on a server with automated SSL
 2. **Configure Traefik:**  
    - Follow [this guide](/docs/Cloudflare.md) to create a Cloudflare token  
    - Copy `.env.example` to `.env` in the `traefik` folder  
-3. **Set up DNS:**  
-   - Add the necessary records using [this guide](/docs/DNS.md)  
-4. Run Install script
+3. Run Install script
    ```sh
    sh install.sh
    ```  
-5. **Deploy an Application:**  
+4. **Deploy any Application:**  
+   - Add the necessary DNS record for application using [this guide](/docs/DNS.md)  
    - Navigate to the application's directory  
-   - Copy `.env.example` to `.env` 
+   - Copy `.env.example` to `.env` and fill missing fields
    - Run:  
      ```sh
      sh deploy.sh
@@ -34,9 +33,10 @@ Easily deploy open-source applications locally or on a server with automated SSL
 
 | Application  | Description  |  
 |-------------|-------------|  
-| **Traefik**  | Reverse proxy for managing traffic |  
-| **OpenWebUI**  | AI chat interface supporting multiple LLMs |  
-| **FreshRSS**  | Self-hosted RSS reader |  
-| **PostgreSQL**  | Powerful relational database |  
-| **Mattermost**  | Open-source Slack alternative |  
-| **ShellNGN**  | Web based ssh management |  
+| [**Traefik**](https://traefik.io/) | Reverse proxy for managing traffic |  
+| [**OpenWebUI**](https://openwebui.com/) | AI chat interface supporting multiple LLMs |  
+| [**FreshRSS**](https://freshrss.org/)  | Self-hosted RSS reader |  
+| [**Postgresql**](https://www.postgresql.org/)  | Powerful relational database |  
+| [**Mattermost**](https://mattermost.com/) | Open-source Slack alternative |  
+| [**ShellNGN**](https://shellngn.com/)  | Web Based SSH Client with SFTP, VNC, RDP and more |  
+| [**N8N**](https://n8n.io/)  | AI workflow automation |  

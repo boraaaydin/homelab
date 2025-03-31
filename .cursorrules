@@ -14,11 +14,11 @@
     labels:
       - 'traefik.enable=true'
       # HTTP Router
-      - 'traefik.http.routers.freshrss.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.freshrss.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.freshrss.entrypoints=web'
       - 'traefik.http.routers.freshrss.middlewares=redirect-to-https'
       # HTTPS Router
-      - 'traefik.http.routers.freshrss-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.freshrss-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.freshrss-secure.entrypoints=websecure'
       - 'traefik.http.routers.freshrss-secure.tls=true'
       - 'traefik.http.routers.freshrss-secure.tls.certresolver=cloudflare'

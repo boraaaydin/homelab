@@ -1,59 +1,52 @@
-version: "3.7"
 services:
-#   traefik:
-#     image: "traefik"
-#     restart: always
-#     command:
-#       - "--api=true"
-#       - "--api.insecure=true"
-#       - "--providers.docker=true"
-#       - "--providers.docker.exposedbydefault=false"
-#       - "--entrypoints.web.address=:80"
-#       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-#       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-#       - "--entrypoints.websecure.address=:443"
-#       - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
-#       - "--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}"
-#       - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
-#     ports:
-#       - "80:80"
-#       - "443:443"
-#     volumes:
-#       - traefik_data:/letsencrypt
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-
   n8n:
     image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
     restart: always
-    ports:
-      - "127.0.0.1:5678:5678"
+    # ports:
+    #   - "5678:5678"
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n.rule=Host(`${CUSTOMDOMAIN}`)
-      - traefik.http.routers.n8n.tls=true
-      - traefik.http.routers.n8n.entrypoints=web,websecure
-      # - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
-      # - traefik.http.middlewares.n8n.headers.SSLRedirect=true
-      # - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
-      # - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
-      # - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
-      # - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
-      # - traefik.http.middlewares.n8n.headers.SSLHost=${CUSTOMDOMAIN}
-      # - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
-      # - traefik.http.middlewares.n8n.headers.STSPreload=true
-      - traefik.http.routers.n8n.middlewares=n8n@docker
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.n8n.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.n8n.entrypoints=web'
+      - 'traefik.http.routers.n8n.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.n8n-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.n8n-secure.entrypoints=websecure'
+      - 'traefik.http.routers.n8n-secure.tls=true'
+      - 'traefik.http.routers.n8n-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
     environment:
-      - N8N_HOST=${CUSTOMDOMAIN}
-      - N8N_PORT=5678
-      - N8N_PROTOCOL=https
+      - N8N_HOST=${DOMAIN_PREFIX}.${DOMAIN}
+      - N8N_PORT=${N8N_PORT}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
       - NODE_ENV=production
-      - WEBHOOK_URL=https://${CUSTOMDOMAIN}/
-      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - WEBHOOK_URL=https://${DOMAIN_PREFIX}.${DOMAIN}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
     volumes:
       - n8n_data:/home/node/.n8n
-
+    networks:
+      - shared_network
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT}"
+          memory: "${MEMORY_LIMIT}"
+          pids: "${PIDS_LIMIT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    
 volumes:
-  traefik_data:
-    external: true
   n8n_data:
+
+networks:
+  shared_network:
     external: true
