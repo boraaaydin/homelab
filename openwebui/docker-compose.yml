@@ -9,6 +9,10 @@ services:
     image: ollama/ollama:${OLLAMA_DOCKER_TAG}
     networks:
       - shared_network
+    deploy:
+      resources:
+        limits:
+          pids: 100
 
   open-webui:
     container_name: open-webui
@@ -17,8 +21,6 @@ services:
     #   args:
     #     OLLAMA_BASE_URL: '/ollama'
     #   dockerfile: Dockerfile
-    ports:
-      - "${HOST_PORT}:8080"
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG}
     volumes:
       - open-webui:/app/backend/data
@@ -36,6 +38,10 @@ services:
     restart: unless-stopped
     networks:
       - shared_network
+    deploy:
+      resources:
+        limits:
+          pids: 100
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 10s

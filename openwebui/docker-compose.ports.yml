@@ -1,0 +1,4 @@
+services:
+  open-webui:
+    ports:
+      - "${HOST_PORT}:8080" 
