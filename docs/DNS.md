@@ -6,6 +6,7 @@
 - You can access your applications in the following format:
   - Pattern: `domainprefix.basedomain`
   - Example: `n8n.apps.example.com`
+- For better security, avoid exposing your application ports directly to the internet. Don't set HOST_PORT variables. 
 
 ### 2. For Local Development (Without Domain)
 
