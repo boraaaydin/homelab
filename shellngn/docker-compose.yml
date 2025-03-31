@@ -1,14 +1,44 @@
 services:
-  shellngn-pro:
-    image: shellngn/pro:latest
+  shellngn:
+    image: shellngn/pro:${DOCKER_IMAGE_TAG}
     container_name: shellngn-pro
-    ports:
-      - "8999:8080"
+    # ports:
+    #   - "8999:8080"
     environment:
       - HOST=0.0.0.0
     volumes:
       - shellngn-data:/home/node/server/data
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+          pids: 100
+    networks:
+      - shared_network
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.shellngn-pro.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.shellngn-pro.entrypoints=web'
+      - 'traefik.http.routers.shellngn-pro.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.shellngn-pro-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.shellngn-pro-secure.entrypoints=websecure'
+      - 'traefik.http.routers.shellngn-pro-secure.tls=true'
+      - 'traefik.http.routers.shellngn-pro-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.shellngn-pro.loadbalancer.server.port=8080'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
 
 volumes:
   shellngn-data:
+
+networks:
+  shared_network:
+    external: true
 

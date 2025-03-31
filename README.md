@@ -18,9 +18,13 @@ Easily deploy open-source applications locally or on a server with automated SSL
    - Copy `.env.example` to `.env` in the `traefik` folder  
 3. **Set up DNS:**  
    - Add the necessary records using [this guide](/docs/DNS.md)  
-4. **Deploy an Application:**  
+4. Run Install script
+   ```sh
+   sh install.sh
+   ```  
+5. **Deploy an Application:**  
    - Navigate to the application's directory  
-   - Copy `.env.example` to `.env`  
+   - Copy `.env.example` to `.env` 
    - Run:  
      ```sh
      sh deploy.sh
@@ -35,3 +39,4 @@ Easily deploy open-source applications locally or on a server with automated SSL
 | **FreshRSS**  | Self-hosted RSS reader |  
 | **PostgreSQL**  | Powerful relational database |  
 | **Mattermost**  | Open-source Slack alternative |  
+| **ShellNGN**  | Web based ssh management |  
