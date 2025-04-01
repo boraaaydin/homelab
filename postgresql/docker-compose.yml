@@ -28,7 +28,7 @@ services:
       - 'traefik.http.routers.app-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
       - 'traefik.http.routers.app-secure.tls=true'
       - 'traefik.http.routers.app-secure.tls.certresolver=cloudflare'
-      - 'traefik.http.services.app.loadbalancer.server.port=8080'
+      - 'traefik.http.services.app.loadbalancer.server.port=5432'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.routers.app.middlewares=redirect-to-https'
       
