@@ -25,6 +25,14 @@ entryPoints:
     address: ":8080"
 serverTransport:
   insecureSkipVerify: true # <-- (Optional) Disables SSL certificate verification between your traefik instance and your backend
+
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
