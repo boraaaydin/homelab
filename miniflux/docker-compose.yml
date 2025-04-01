@@ -1,0 +1,43 @@
+services:
+  miniflux:
+    image: miniflux/miniflux:${MINIFLUX_VERSION}
+    container_name: miniflux
+    pids_limit: 100
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - miniflux-data:/data
+    networks:
+      - shared_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.miniflux.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.miniflux.entrypoints=web'
+      - 'traefik.http.routers.miniflux.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.miniflux-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.miniflux-secure.entrypoints=websecure'
+      - 'traefik.http.routers.miniflux-secure.tls=true'
+      - 'traefik.http.routers.miniflux-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.miniflux.loadbalancer.server.port=8080'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+volumes:
+  miniflux-data:
+
+networks:
+  shared_network:
+    external: true
