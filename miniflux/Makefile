@@ -37,6 +37,10 @@ restart: down up ## Restart containers
 logs: ## Show container logs
 	@$(DC) logs -f
 
+traefik-logs: ## Show Traefik logs filtered for miniflux
+	@echo "🔍 Showing Traefik logs for miniflux..."
+	@docker logs traefik 2>&1 | grep -i miniflux
+
 ps: ## List running containers
 	@$(DC) ps
 
@@ -44,10 +48,6 @@ clean: down ## Remove all containers and volumes
 	@echo "🧹 Cleaning up..."
 	@$(DC) down -v
 
-pull: ## Pull latest images
-	@echo "⬇️ Pulling latest images..."
-	@$(DC) pull
-
 help: ## Show this help message
 	@echo "🔍 Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' 
+	@awk '/^[a-zA-Z_-]+:.*##/{printf "\033[36m%-20s\033[0m %s\n", substr($$1,1,length($$1)-1), substr($$0,index($$0,"##")+3)}' $(MAKEFILE_LIST) 
