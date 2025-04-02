@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  ntfy:
+    image: binwiederhier/ntfy
+    container_name: ntfy
+    command:
+      - serve
+    environment:
+      - TZ=${TZ}
+    user: ${PUID}:${PGID}
+    volumes:
+      - ${DATA_DIR}/cache:/var/cache/ntfy
+      - ${DATA_DIR}/config:/etc/ntfy
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:80/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.ntfy.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ntfy.entrypoints=web'
+      - 'traefik.http.routers.ntfy.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.ntfy-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ntfy-secure.entrypoints=websecure'
+      - 'traefik.http.routers.ntfy-secure.tls=true'
+      - 'traefik.http.routers.ntfy-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.ntfy.loadbalancer.server.port=80'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+networks:
+  shared_network:
+    external: true 

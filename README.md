@@ -69,9 +69,10 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 ### 💬 Communication & Collaboration
 | Application | Description | Category |
 |------------|-------------|----------|
-| [**Mattermost**](https://mattermost.com/) | Secure enterprise collaboration platform | Communication |
+| [**Mattermost**](https://mattermost.com/) | Secure enterprise collaboration platform | Collaboration |
 | [**Miniflux**](https://miniflux.app/) | RSS Reader | Content |
 | [**FreshRSS**](https://freshrss.org/) | RSS Reader | Content |
+| [**Ntyf**](https://ntfy.sh/) | Http based pub-sub notification service | Notification |
 
 ### 🤖 AI & Automation
 | Application | Description | Category |
