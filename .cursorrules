@@ -29,5 +29,7 @@
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
-
 `
+- Makefile 
+  - should have setup, clean, up, down, restart, logs, traefik-logs, ps, clean, helps commands
+  - read .env file, get fulldomain from {domain-prefix}.{domain} and create dns-mac, dns-linux, dns-windows commands for dns resolution described in dns.md file with this full domain

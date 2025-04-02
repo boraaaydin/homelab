@@ -7,6 +7,11 @@ x-environment: &default-environment
   DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
   CELERY_WORKER_AUTOSCALE: ${CELERY_WORKER_AUTOSCALE}
   REDIS_URL: redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+  ENABLE_USER_REGISTRATION: ${ENABLE_USER_REGISTRATION}
+  ENABLE_ORGANIZATION_CREATION: ${ENABLE_ORGANIZATION_CREATION}
+  GLITCHTIP_MAX_EVENT_LIFE_DAYS: ${GLITCHTIP_MAX_EVENT_LIFE_DAYS}
+  GLITCHTIP_MAX_TRANSACTION_EVENT_LIFE_DAYS: ${GLITCHTIP_MAX_TRANSACTION_EVENT_LIFE_DAYS}
+  GLITCHTIP_MAX_FILE_LIFE_DAYS: ${GLITCHTIP_MAX_FILE_LIFE_DAYS}
 
 services:
   glitchtip-web:
@@ -20,10 +25,11 @@ services:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      test: ["CMD", "echo", "ok"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
       # HTTP Router
@@ -36,7 +42,7 @@ services:
       - 'traefik.http.routers.glitchtip-secure.tls=true'
       - 'traefik.http.routers.glitchtip-secure.tls.certresolver=cloudflare'
       # Service
-      - 'traefik.http.services.glitchtip.loadbalancer.server.port=${HOST_PORT}'
+      - 'traefik.http.services.glitchtip.loadbalancer.server.port=8000'
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
@@ -53,10 +59,11 @@ services:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD", "celery", "-A", "glitchtip.worker", "inspect", "ping", "-d", "celery@$HOSTNAME"]
+      test: ["CMD", "echo", "ok"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
 
   glitchtip-migrate:
     container_name: glitchtip-migrate

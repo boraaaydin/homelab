@@ -1,4 +1,4 @@
-.PHONY: setup clean up down restart logs traefik-logs ps clean help
+.PHONY: setup clean up down restart logs traefik-logs ps clean help dns-mac dns-linux dns-windows
 
 # Variables
 DOCKER_COMPOSE = docker-compose
@@ -14,6 +14,9 @@ help:
 	@echo "  traefik-logs - Traefik loglarını gösterir"
 	@echo "  ps           - Çalışan servisleri listeler"
 	@echo "  clean        - Tüm container ve volumeleri temizler"
+	@echo "  dns-mac      - Mac için DNS kaydı ekler"
+	@echo "  dns-linux    - Linux için DNS kaydı ekler"
+	@echo "  dns-windows  - Windows için DNS kaydı ekler"
 
 setup:
 	@if [ ! -f .env ]; then \
@@ -43,4 +46,41 @@ ps:
 
 clean:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down -v
-	docker network rm shared_network 2>/dev/null || true 
+	docker network rm shared_network 2>/dev/null || true
+
+# DNS resolution commands
+dns-mac:
+	@if [ -f .env ]; then \
+		export $$(cat .env | grep -v '#' | xargs) && \
+		FULL_DOMAIN="$${DOMAIN_PREFIX}.$${DOMAIN}" && \
+		echo "Mac için DNS kaydı ekleniyor..." && \
+		sudo sh -c "echo '127.0.0.1 $$FULL_DOMAIN' >> /private/etc/hosts" && \
+		echo "DNS kaydı başarıyla eklendi: $$FULL_DOMAIN"; \
+	else \
+		echo ".env dosyası bulunamadı!"; \
+		exit 1; \
+	fi
+
+dns-linux:
+	@if [ -f .env ]; then \
+		export $$(cat .env | grep -v '#' | xargs) && \
+		FULL_DOMAIN="$${DOMAIN_PREFIX}.$${DOMAIN}" && \
+		echo "Linux için DNS kaydı ekleniyor..." && \
+		sudo sh -c "echo '127.0.0.1 $$FULL_DOMAIN' >> /etc/hosts" && \
+		echo "DNS kaydı başarıyla eklendi: $$FULL_DOMAIN"; \
+	else \
+		echo ".env dosyası bulunamadı!"; \
+		exit 1; \
+	fi
+
+dns-windows:
+	@if [ -f .env ]; then \
+		export $$(cat .env | grep -v '#' | xargs) && \
+		FULL_DOMAIN="$${DOMAIN_PREFIX}.$${DOMAIN}" && \
+		echo "Windows için DNS kaydı ekleniyor..." && \
+		runas /user:Administrator "echo 127.0.0.1 $$FULL_DOMAIN >> %WINDIR%\\System32\\drivers\\etc\\hosts" && \
+		echo "DNS kaydı başarıyla eklendi: $$FULL_DOMAIN"; \
+	else \
+		echo ".env dosyası bulunamadı!"; \
+		exit 1; \
+	fi 

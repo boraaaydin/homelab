@@ -10,6 +10,10 @@
 
 ### 2. For Local Development (Without Domain)
 
+#### simply run either "make dns-mac", "make dns-linux" or "make dns-windows" after filling .env file.
+
+#### or manually configure: 
+
 #### For macOS Users
 ```bash
 # Add domain to local hosts file:

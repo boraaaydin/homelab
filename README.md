@@ -40,14 +40,22 @@ A comprehensive solution for deploying and managing self-hosted applications wit
    ```
 
 4. **Deploy Applications**
-   - Configure DNS records using our [DNS setup guide](/docs/DNS.md)
    - Navigate to your chosen application directory
-   - Set up the application environment:
+   - Make a copy of .env.example with name .env:
      ```bash
      cp .env.example .env
      # Configure application-specific settings
-     make up
      ```
+   - Configure DNS records using our [DNS setup guide](/docs/DNS.md)
+   - Run app
+      ```bash
+      make up
+      ```
+   - For available commmands:
+      ```bash
+      make 
+      ```
+
 
 ## 📦 Available Applications
 
@@ -56,6 +64,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 |------------|-------------|----------|
 | [**Traefik**](https://traefik.io/) | Modern reverse proxy and load balancer | Infrastructure |
 | [**PostgreSQL**](https://www.postgresql.org/) | Enterprise-grade relational database | Database |
+| [**Valkey**](https://valkey.io/) | Fork of Redis. In memory data store | Database |
 
 ### 💬 Communication & Collaboration
 | Application | Description | Category |
@@ -74,6 +83,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | Application | Description | Category |
 |------------|-------------|----------|
 | [**ShellNGN**](https://shellngn.com/) | Comprehensive web-based terminal suite | DevTools |
+| [**Glitchtip**](https://glitchtip.com/) | Error tracking, Application performance, uptime monitoring tool | Monitoring |
 
 ## 🤝 Contributing
 
