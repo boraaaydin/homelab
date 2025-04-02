@@ -1,0 +1,5 @@
+services:
+  glitchtip-web:
+    ports:
+      - "${HOST_PORT}:${HOST_PORT}"
+  

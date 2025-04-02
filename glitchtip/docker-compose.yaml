@@ -1,0 +1,75 @@
+x-environment: &default-environment
+  DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+  SECRET_KEY: ${SECRET_KEY}
+  PORT: 8000
+  EMAIL_URL: ${EMAIL_URL} 
+  GLITCHTIP_DOMAIN: https://${DOMAIN_PREFIX}.${DOMAIN} 
+  DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+  CELERY_WORKER_AUTOSCALE: ${CELERY_WORKER_AUTOSCALE}
+  REDIS_URL: redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+
+services:
+  glitchtip-web:
+    container_name: glitchtip
+    image: glitchtip/glitchtip:${DOCKER_TAG}
+    environment: *default-environment
+    restart: unless-stopped
+    volumes:
+      - uploads:/code/uploads
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.glitchtip.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.glitchtip.entrypoints=web'
+      - 'traefik.http.routers.glitchtip.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.glitchtip-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.glitchtip-secure.entrypoints=websecure'
+      - 'traefik.http.routers.glitchtip-secure.tls=true'
+      - 'traefik.http.routers.glitchtip-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.glitchtip.loadbalancer.server.port=${HOST_PORT}'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+  glitchtip-worker:
+    container_name: glitchtip-worker
+    image: glitchtip/glitchtip:${DOCKER_TAG}
+    command: ./bin/run-celery-with-beat.sh
+    environment: *default-environment
+    restart: unless-stopped
+    volumes:
+      - uploads:/code/uploads
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "celery", "-A", "glitchtip.worker", "inspect", "ping", "-d", "celery@$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  glitchtip-migrate:
+    container_name: glitchtip-migrate
+    image: glitchtip/glitchtip:${DOCKER_TAG}
+    command: ./bin/run-migrate.sh
+    environment: *default-environment
+    networks:
+      - shared_network
+    pids_limit: 100
+
+volumes:
+  uploads:
+
+networks:
+  shared_network:
+    external: true
