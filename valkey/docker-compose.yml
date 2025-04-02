@@ -1,0 +1,44 @@
+services:
+  valkey:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    container_name: valkey
+    environment:
+      - ALLOW_EMPTY_PASSWORD=${ALLOW_EMPTY_PASSWORD}
+      - VALKEY_PASSWORD=${VALKEY_PASSWORD}
+      - VALKEY_DISABLE_COMMANDS=${VALKEY_DISABLE_COMMANDS}
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'valkey_data:/bitnami/valkey/data'
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6379"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.valkey.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.valkey.entrypoints=web'
+      - 'traefik.http.routers.valkey.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.valkey-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.valkey-secure.entrypoints=websecure'
+      - 'traefik.http.routers.valkey-secure.tls=true'
+      - 'traefik.http.routers.valkey-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.valkey.loadbalancer.server.port=6379'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+volumes:
+  valkey_data:
+    driver: local
+
+networks:
+  shared_network:
+    external: true

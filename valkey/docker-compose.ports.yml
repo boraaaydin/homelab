@@ -1,0 +1,4 @@
+services:
+  valkey:
+    ports:
+      - "${HOST_PORT}:6379" 
