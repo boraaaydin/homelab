@@ -14,7 +14,7 @@ services:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6379"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
