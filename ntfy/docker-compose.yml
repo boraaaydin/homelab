@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   ntfy:
     image: binwiederhier/ntfy
@@ -8,6 +6,13 @@ services:
       - serve
     environment:
       - TZ=${TZ}
+      - NTFY_BASE_URL=${NTFY_BASE_URL}
+      - NTFY_CACHE_FILE=${NTFY_CACHE_FILE}
+      - NTFY_AUTH_FILE=${NTFY_AUTH_FILE}
+      - NTFY_AUTH_DEFAULT_ACCESS=${NTFY_AUTH_DEFAULT_ACCESS}
+      - NTFY_BEHIND_PROXY=${NTFY_BEHIND_PROXY}
+      - NTFY_ATTACHMENT_CACHE_DIR=${NTFY_ATTACHMENT_CACHE_DIR}
+      - NTFY_ENABLE_LOGIN=true
     user: ${PUID}:${PGID}
     volumes:
       - ${DATA_DIR}/cache:/var/cache/ntfy
