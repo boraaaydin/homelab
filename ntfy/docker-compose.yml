@@ -15,8 +15,10 @@ services:
       - NTFY_ENABLE_LOGIN=true
     user: ${PUID}:${PGID}
     volumes:
-      - ${DATA_DIR}/cache:/var/cache/ntfy
-      - ${DATA_DIR}/config:/etc/ntfy
+      - ./data/cache:/var/cache/ntfy
+      - ./data/attachments:/var/lib/ntfy/attachments
+      - ./data/db:/var/lib/ntfy
+      - ./data/config:/etc/ntfy
     networks:
       - shared_network
     pids_limit: 100
