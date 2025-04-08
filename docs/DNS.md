@@ -14,9 +14,9 @@
 
 #### or manually configure: 
 
-mac host file : /private/etc/hosts
-linux host file: /etc/hosts
-windows host file: C:\Windows\System32\drivers\etc\hosts
+- mac host file : /private/etc/hosts
+- linux host file: /etc/hosts
+- windows host file: C:\Windows\System32\drivers\etc\hosts
 
 #### For macOS Users
 ```bash
