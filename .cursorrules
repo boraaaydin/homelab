@@ -5,6 +5,7 @@
 ## Conventions
 - Use English when commiting files
 - Add healthcheck in every docker compose with curl
+- After updating healthcheck, first test it from inside container with proper command
 - every app will have .env file
 - each app should be under network name shared_network  
 - add container_name label with proper label.

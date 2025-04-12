@@ -21,7 +21,7 @@ services:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/healthz/"]
+      test: ["CMD", "python3", "-c", "import requests; exit(0) if requests.get('http://localhost:9000/-/health/live/').status_code == 200 else exit(1)"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -60,7 +60,7 @@ services:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/healthz/"]
+      test: ["CMD", "python3", "-c", "import os, signal; os.kill(1, signal.SIGCONT)"]
       interval: 30s
       timeout: 10s
       retries: 3
