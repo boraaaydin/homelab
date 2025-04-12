@@ -62,6 +62,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 ### 🛠 Core Infrastructure
 | Application | Description | Category |
 |------------|-------------|----------|
+| [**Authentic**](https://goauthentik.io/) | Open source Identity and Access Management platform | Security |
 | [**Traefik**](https://traefik.io/) | Modern reverse proxy and load balancer | Infrastructure |
 | [**PostgreSQL**](https://www.postgresql.org/) | Enterprise-grade relational database | Database |
 | [**Valkey**](https://valkey.io/) | Fork of Redis. In memory data store | Database |
