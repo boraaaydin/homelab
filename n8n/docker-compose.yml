@@ -8,7 +8,6 @@ services:
       # HTTP Router
       - 'traefik.http.routers.n8n.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.n8n.entrypoints=web'
-      - 'traefik.http.routers.n8n.middlewares=redirect-to-https'
       # HTTPS Router
       - 'traefik.http.routers.n8n-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.n8n-secure.entrypoints=websecure'
@@ -16,9 +15,6 @@ services:
       - 'traefik.http.routers.n8n-secure.tls.certresolver=cloudflare'
       # Service
       - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}'
-      # Middleware for HTTPS redirect
-      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
-      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
     environment:
       - N8N_HOST=${DOMAIN_PREFIX}.${DOMAIN}
       - N8N_PORT=${N8N_PORT}
@@ -27,6 +23,7 @@ services:
       - WEBHOOK_URL=https://${DOMAIN_PREFIX}.${DOMAIN}/
       - GENERIC_TIMEZONE=${TIMEZONE}
       - N8N_RUNNERS_ENABLED=true
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE}
       
     volumes:
       - n8n_data:/home/node/.n8n
