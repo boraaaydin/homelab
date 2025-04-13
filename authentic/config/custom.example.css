@@ -1,0 +1,18 @@
+.pf-c-login__footer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+footer.pf-c-login__footer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+.pf-c-login__main footer.pf-c-login__footer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+

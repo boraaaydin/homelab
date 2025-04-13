@@ -15,6 +15,7 @@ services:
     volumes:
       - ./media:/media
       - ./custom-templates:/templates
+      - ./config/custom.css:/web/dist/custom.css
     env_file:
       - .env
     networks:
