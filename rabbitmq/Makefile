@@ -1,5 +1,4 @@
-include ../.env
--include .env
+include .env
 
 DOCKER_COMPOSE = docker-compose
 GREEN = \033[0;32m
@@ -13,6 +12,9 @@ DOMAIN_PREFIX ?= rabbitmq
 FULL_DOMAIN = $(DOMAIN_PREFIX).$(DOMAIN)
 
 .PHONY: setup clean up down restart logs traefik-logs ps help dns-mac dns-linux dns-windows
+
+# Default target
+.DEFAULT_GOAL := help
 
 setup:
 	@echo "$(GREEN)Setting up RabbitMQ...$(NC)"

@@ -12,12 +12,13 @@ services:
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
       - shared_network
-    pids_limit: 100
+    pids_limit: ${PIDS_LIMIT:-100}
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 10s
     labels:
       - 'traefik.enable=true'
       # HTTP Router
