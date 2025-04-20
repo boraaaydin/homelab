@@ -1,4 +1,4 @@
 services:
   redis-commander:
     ports:
-      - ${HOST_PORT}:8081 
+      - "${HOST_PORT}:8081" 

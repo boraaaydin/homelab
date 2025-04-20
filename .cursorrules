@@ -40,6 +40,7 @@
 - Makefile 
   - should have makefile for every app.
   - should have setup, clean, up, down, restart, logs, traefik-logs, ps, clean, helps commands
+  - traefik-logs should be filtered with app name.
   - Read .env file, get fulldomain from {domain-prefix}.{domain} and create dns-mac, dns-linux, dns-windows commands for dns resolution described in docs/DNS.md file with this full domain. 
   - Dns file location should be taken from docs/DNS.md file.
 
