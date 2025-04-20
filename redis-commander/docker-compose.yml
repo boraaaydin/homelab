@@ -1,0 +1,37 @@
+services:
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: ${REDIS_HOST:-valkey}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      HTTP_USER: ${HTTP_USER}
+      HTTP_PASSWORD: ${HTTP_PASSWORD}
+      # ADDRESS: ${ADDRESS:-0.0.0.0:8081}
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.redis-commander.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.redis-commander.entrypoints=web'
+      # HTTPS Router
+      - 'traefik.http.routers.redis-commander-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.redis-commander-secure.entrypoints=websecure'
+      - 'traefik.http.routers.redis-commander-secure.tls=true'
+      - 'traefik.http.routers.redis-commander-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.redis-commander.loadbalancer.server.port=8081'
+
+networks:
+  shared_network:
+    external: true

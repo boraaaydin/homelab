@@ -12,6 +12,16 @@
 - add 'pids_limit: 100' labels on every docker compose yml. 
 - HOST_PORT should be added to every docker compose yml file.
 - Port exposure should be optional and managed through separate docker-compose.ports.yml file
+- if port is set in .env file, use docker-compose.ports.yml file to expose port.
+`
+  if [ -n "$(HOST_PORT)" ]; then \
+    echo "$(YELLOW)Port $(HOST_PORT) will be exposed$(NC)"; \
+    $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.ports.yml up -d || { echo "$(RED)Error starting OpenWebUI.$(NC)"; exit 1; }; \
+  else \
+      echo "$(YELLOW)No HOST_PORT defined, service will only be available through Traefik$(NC)"; \
+      $(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting OpenWebUI.$(NC)"; exit 1; }; \
+	fi
+`
 - add traefik labels on every docker compose yml file.
 `
     labels:

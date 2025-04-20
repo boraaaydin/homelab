@@ -1,0 +1,4 @@
+services:
+  redis-commander:
+    ports:
+      - ${HOST_PORT}:8081 
