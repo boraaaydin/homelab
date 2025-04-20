@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    ports:
+      - "${HOST_PORT}:5672"
+      - "${MANAGEMENT_PORT}:15672" 
