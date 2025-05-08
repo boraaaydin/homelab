@@ -10,9 +10,9 @@
 - each app should be under network name shared_network  
 - add container_name label with proper label.
 - add 'pids_limit: 100' labels on every docker compose yml. 
-- HOST_PORT should be added to every docker compose yml file.
-- Port exposure should be optional and managed through separate docker-compose.ports.yml file
-- if port is set in .env file, use docker-compose.ports.yml file to expose port.
+- HOST_PORT should be added to every docker compose yml file except traefik.
+- Port exposure should be optional and managed through separate docker-compose.ports.yml file except traefik.
+- if port is set in .env file, use docker-compose.ports.yml file to expose port except traefik.
 `
   if [ -n "$(HOST_PORT)" ]; then \
     echo "$(YELLOW)Port $(HOST_PORT) will be exposed$(NC)"; \
@@ -22,7 +22,7 @@
       $(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting OpenWebUI.$(NC)"; exit 1; }; \
 	fi
 `
-- add traefik labels on every docker compose yml file.
+- add traefik labels on every docker compose yml file except traefik.
 `
     labels:
       - 'traefik.enable=true'
@@ -40,7 +40,7 @@
 - Makefile 
   - should have makefile for every app.
   - should have setup, clean, up, down, restart, logs, traefik-logs, ps, clean, helps commands
-  - traefik-logs should be filtered with app name.
+  - traefik-logs should be filtered with app name except traefik logs.
   - Read .env file, get fulldomain from {domain-prefix}.{domain} and create dns-mac, dns-linux, dns-windows commands for dns resolution described in docs/DNS.md file with this full domain. 
   - Dns file location should be taken from docs/DNS.md file.
 
