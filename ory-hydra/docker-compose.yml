@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  hydra-migrate:
+    container_name: ${HYDRA_MIGRATE_CONTAINER}
+    image: oryd/hydra:${HYDRA_VERSION}
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
+    networks:
+      - shared_network
+    pids_limit: 100
+
+  # postgresd:
+  #   image: postgres:16
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=hydra
+  #     - POSTGRES_PASSWORD=secret
+  #     - POSTGRES_DB=hydra
+  hydra:
+    container_name: ${HYDRA_CONTAINER}
+    image: oryd/hydra:${HYDRA_VERSION}
+    # build:
+    #   context: .
+    #   dockerfile: .docker/Dockerfile-local-build
+    # ports:
+    #   - "4444:4444" # Public port
+    #   - "4445:4445" # Admin port
+    #   - "5555:5555" # Port for hydra token user
+    command: serve -c /etc/config/hydra/config.yml all --dev
+    volumes:
+      # - hydra-sqlite:/mnt/sqlite:rw
+      - type: bind
+        source: ./contrib/quickstart/5-min
+        target: /etc/config/hydra
+    pull_policy: missing
+    environment:
+      # - DSN=sqlite:///mnt/sqlite/db.sqlite?_fk=true&mode=rwc
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
+    restart: unless-stopped
+    depends_on:
+      - hydra-migrate
+      # - sqlite
+    networks:
+      - shared_network
+    pids_limit: 100
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.hydra.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra.entrypoints=web'
+      # HTTPS Router
+      - 'traefik.http.routers.hydra-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-secure.entrypoints=websecure'
+      - 'traefik.http.routers.hydra-secure.tls=true'
+      - 'traefik.http.routers.hydra-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.hydra.loadbalancer.server.port=4444'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  shared_network:
+    external: true

@@ -1,0 +1,6 @@
+version: '3.8'
+
+services:
+  hydra:
+    ports:
+      - "${HOST_PORT}:4444" 
