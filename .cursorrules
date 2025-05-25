@@ -6,7 +6,7 @@
 - Use English when commiting files
 - Add healthcheck in every docker compose with curl
 - After updating healthcheck, first test it from inside container with proper command
-- every app will have .env file
+- every app will have .env file. Make changes in .env.example like it is .env file.
 - each app should be under network name shared_network  
 - add container_name label with proper label.
 - add 'pids_limit: 100' labels on every docker compose yml. 
