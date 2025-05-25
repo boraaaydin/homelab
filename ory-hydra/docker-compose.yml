@@ -1,4 +1,3 @@
-
 services:
   hydra-migrate:
     container_name: ${HYDRA_MIGRATE_CONTAINER}
@@ -29,10 +28,9 @@ services:
     #   - "5555:5555" # Port for hydra token user
     command: serve -c /etc/config/hydra/config.yml all --dev
     volumes:
-      # - hydra-sqlite:/mnt/sqlite:rw
       - type: bind
         source: ./hydra/config.yml
-        target: /etc/config/hydra
+        target: /etc/config/hydra/config.yml
     pull_policy: missing
     environment:
       # - DSN=sqlite:///mnt/sqlite/db.sqlite?_fk=true&mode=rwc
