@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   hydra-migrate:
@@ -32,7 +31,7 @@ services:
     volumes:
       # - hydra-sqlite:/mnt/sqlite:rw
       - type: bind
-        source: ./contrib/quickstart/5-min
+        source: ./hydra/config.yml
         target: /etc/config/hydra
     pull_policy: missing
     environment:
@@ -57,11 +56,11 @@ services:
       - 'traefik.http.routers.hydra-secure.tls.certresolver=cloudflare'
       # Service
       - 'traefik.http.services.hydra.loadbalancer.server.port=4444'
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4444/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:4444/health/ready"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
 
 networks:
   shared_network:
