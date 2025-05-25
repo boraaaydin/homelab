@@ -1,0 +1,23 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongodb
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "96m"
+        max-file: "5"
+    volumes:
+      # - ./conf/mongo/:/docker-entrypoint-initdb.d/
+      - mongodb-data:/data/db/
+      - mongodb-log:/var/log/mongodb/
+    env_file:
+      - .env
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    #   MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    ports:
+      - "27017:27017"
