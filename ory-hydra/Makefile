@@ -31,8 +31,7 @@ help:
 
 setup:
 	@echo "$(GREEN)Setting up Ory Hydra...$(NC)"
-	@cp -n .env.example .env || true
-	@echo "$(YELLOW)Please update the .env file with your configuration$(NC)"
+	@echo "$(YELLOW)Please create "hydra" database in postgres $(NC)"
 
 up:
 	@echo "$(GREEN)Starting Ory Hydra...$(NC)"
