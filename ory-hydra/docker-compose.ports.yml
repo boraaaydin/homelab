@@ -1,12 +1,7 @@
-version: '3.8'
 
 services:
-  postgres:
-    ports:
-      - "${POSTGRES_PORT}:5432"
-  
   hydra:
     ports:
       - "${HOST_PORT}:4444" # Public port
       - "${ADMIN_PORT}:4445" # Admin port
-      - "${TOKEN_PORT}:5555" # Port for hydra token user 
+      # - "${TOKEN_PORT}:5555" # Port for hydra token user 

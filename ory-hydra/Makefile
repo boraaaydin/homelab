@@ -65,7 +65,9 @@ clean: down
 
 dns-mac dns-linux:
 	@echo "$(GREEN)Adding DNS entry to /etc/hosts...$(NC)"
-	@echo "127.0.0.1 $(FULL_DOMAIN)" | sudo tee -a /etc/hosts
+	@echo "127.0.0.1 ${DOMAIN_PREFIX}-admin.${DOMAIN}" | sudo tee -a /etc/hosts
+	@echo "127.0.0.1 ${DOMAIN_PREFIX}-token.${DOMAIN}" | sudo tee -a /etc/hosts
+	@echo "127.0.0.1 ${DOMAIN_PREFIX}.${DOMAIN}" | sudo tee -a /etc/hosts
 	@echo "$(GREEN)DNS entry added successfully$(NC)"
 
 dns-windows:
