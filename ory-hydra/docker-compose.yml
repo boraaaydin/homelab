@@ -51,39 +51,49 @@ services:
       - shared_network
     pids_limit: 100
     labels:
-      # Public API (4444)
       - 'traefik.enable=true'
+      # Public API (4444)
       - 'traefik.http.routers.hydra-public.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public.entrypoints=web'
+      - 'traefik.http.routers.hydra-public.service=hydra-public'
       - 'traefik.http.routers.hydra-public-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-public-secure.tls=true'
       - 'traefik.http.routers.hydra-public-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.hydra-public-secure.service=hydra-public'
       - 'traefik.http.services.hydra-public.loadbalancer.server.port=4444'
 
       # Admin API (4445)
       - 'traefik.http.routers.hydra-admin.rule=Host(`${DOMAIN_PREFIX}-admin.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-admin.entrypoints=web'
+      - 'traefik.http.routers.hydra-admin.service=hydra-admin'
       - 'traefik.http.routers.hydra-admin-secure.rule=Host(`${DOMAIN_PREFIX}-admin.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-admin-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-admin-secure.tls=true'
       - 'traefik.http.routers.hydra-admin-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.hydra-admin-secure.service=hydra-admin'
       - 'traefik.http.services.hydra-admin.loadbalancer.server.port=4445'
 
       # Token API (5555)
       - 'traefik.http.routers.hydra-token.rule=Host(`${DOMAIN_PREFIX}-token.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-token.entrypoints=web'
+      - 'traefik.http.routers.hydra-token.service=hydra-token'
       - 'traefik.http.routers.hydra-token-secure.rule=Host(`${DOMAIN_PREFIX}-token.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-token-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-token-secure.tls=true'
       - 'traefik.http.routers.hydra-token-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.hydra-token-secure.service=hydra-token'
       - 'traefik.http.services.hydra-token.loadbalancer.server.port=5555'
 
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:4444/health/ready"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 3
+    healthcheck:
+      test: |
+        /bin/sh -c '
+        wget -q -O /dev/null http://localhost:4444/health/ready || exit 1;
+        wget -q -O /dev/null http://localhost:4445/health/ready || exit 1;
+        '
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   shared_network:
