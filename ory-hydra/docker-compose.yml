@@ -53,10 +53,10 @@ services:
     labels:
       - 'traefik.enable=true'
       # Public API (4444)
-      - 'traefik.http.routers.hydra-public.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-public.rule=Host(`${DOMAIN_PREFIX}-public.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public.entrypoints=web'
       - 'traefik.http.routers.hydra-public.service=hydra-public'
-      - 'traefik.http.routers.hydra-public-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-public-secure.rule=Host(`${DOMAIN_PREFIX}-public.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-public-secure.tls=true'
       - 'traefik.http.routers.hydra-public-secure.tls.certresolver=cloudflare'
