@@ -4,7 +4,7 @@ services:
     image: oryd/hydra:${HYDRA_VERSION}
     command: migrate sql -e --yes
     environment:
-      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${HYDRA_POSTGRES_HOST}:5432/${HYDRA_DATABASE}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
     networks:
       - shared_network
     pids_limit: 100
@@ -18,12 +18,12 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=${HYDRA_DATABASE}
     networks:
       - shared_network
     pids_limit: 100
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${HYDRA_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -42,7 +42,7 @@ services:
         target: /etc/config/hydra/config.yml
     pull_policy: missing
     environment:
-      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${HYDRA_POSTGRES_HOST}:5432/${HYDRA_DATABASE}?sslmode=disable&max_conns=${DB_MAX_CONNS}&max_idle_conns=${DB_MAX_IDLE_CONNS}
     restart: unless-stopped
     depends_on:
       - hydra-migrate
