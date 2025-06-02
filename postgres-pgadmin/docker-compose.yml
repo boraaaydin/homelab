@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - saytak_pgadmin:/var/lib/pgadmin
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/misc/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.pgadmin.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.pgadmin.entrypoints=web'
+      # HTTPS Router
+      - 'traefik.http.routers.pgadmin-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
+      - 'traefik.http.routers.pgadmin-secure.tls=true'
+      - 'traefik.http.routers.pgadmin-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.pgadmin.loadbalancer.server.port=80'
+
+volumes:
+  saytak_pgadmin:
+    name: saytak_pgadmin
+
+networks:
+  shared_network:
+    external: true
