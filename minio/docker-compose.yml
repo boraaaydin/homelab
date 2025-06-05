@@ -4,7 +4,7 @@ services:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     volumes:
       - './minio_data:/data'
-      - ./minio/minio-cors.json:/cors.json
+      - ./config/minio-cors.json:/cors.json
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
