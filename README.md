@@ -66,6 +66,8 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**Traefik**](https://traefik.io/) | Modern reverse proxy and load balancer | Infrastructure |
 | [**PostgreSQL**](https://www.postgresql.org/) | Enterprise-grade relational database | Database |
 | [**Valkey**](https://valkey.io/) | Fork of Redis. In memory data store | Database |
+| [**Minio**](https://min.io/) | S3 Compatible Object Storage | Object Storage |
+| [**Ory/Hydra**](https://www.ory.sh/hydra) | Oauth2 Provider | Authentication |
 
 ### 💬 Communication & Collaboration
 | Application | Description | Category |

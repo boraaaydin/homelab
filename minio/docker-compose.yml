@@ -1,0 +1,26 @@
+services:
+  minio:
+    container_name: minio
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    volumes:
+      - './minio_data:/data'
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_DEFAULT_BUCKETS=${MINIO_DEFAULT_BUCKETS}
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.minio.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.minio.entrypoints=web'
+      - 'traefik.http.routers.minio.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.minio-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.minio-secure.entrypoints=websecure'
+      - 'traefik.http.routers.minio-secure.tls=true'
+      - 'traefik.http.routers.minio-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.minio.loadbalancer.server.port=9000'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
