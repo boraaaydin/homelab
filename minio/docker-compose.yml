@@ -4,6 +4,7 @@ services:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
     volumes:
       - './minio_data:/data'
+      - ./minio/minio-cors.json:/cors.json
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -24,3 +25,36 @@ services:
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - shared_network
+
+  minio-init:
+    image: ${DOCKER_CLIENT_IMAGE}:${DOCKER_CLIENT_TAG}
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Waiting for MinIO...';
+      sleep 20;
+      echo 'MinIO is up!';
+      cat /cors.json;
+      echo 'Setting up MinIO...';
+      mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      mc mb -p myminio/${MINIO_DEFAULT_BUCKETS} &&
+      mc cors set myminio/${MINIO_DEFAULT_BUCKETS} /cors.json;
+      "
+    volumes:
+      - ./config/minio-cors.json:/cors.json
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true
