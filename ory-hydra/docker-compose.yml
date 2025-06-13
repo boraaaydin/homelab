@@ -19,6 +19,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${HYDRA_DATABASE}
+    volumes:
+      - ${DATA_PATH}/postgres:/var/lib/postgresql/data
     networks:
       - shared_network
     pids_limit: 100
