@@ -88,10 +88,10 @@ services:
       - 'traefik.http.services.hydra-token.loadbalancer.server.port=5555'
 
     healthcheck:
-      test: |
+      test: >
         /bin/sh -c '
-        wget -q -O /dev/null http://localhost:4444/health/ready || exit 1;
-        wget -q -O /dev/null http://localhost:4445/health/ready || exit 1;
+        wget --header="Origin: http://localhost" -qO- http://localhost:4444/health/ready || exit 1;
+        wget --header="Origin: http://localhost" -qO- http://localhost:4445/health/ready || exit 1;
         '
       interval: 10s
       timeout: 5s
