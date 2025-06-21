@@ -65,6 +65,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**Authentic**](https://goauthentik.io/) | Open source Identity and Access Management platform | Security |
 | [**Traefik**](https://traefik.io/) | Modern reverse proxy and load balancer | Infrastructure |
 | [**PostgreSQL**](https://www.postgresql.org/) | Enterprise-grade relational database | Database |
+| [**MongoDB**](https://www.mongodb.com//) | Nosql database | Database |
 | [**Valkey**](https://valkey.io/) | Fork of Redis. In memory data store | Database |
 | [**Minio**](https://min.io/) | S3 Compatible Object Storage | Object Storage |
 | [**Ory/Hydra**](https://www.ory.sh/hydra) | Oauth2 Provider | Authentication |
@@ -88,6 +89,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 |------------|-------------|----------|
 | [**ShellNGN**](https://shellngn.com/) | Comprehensive web-based terminal suite | DevTools |
 | [**Glitchtip**](https://glitchtip.com/) | Error tracking, Application performance, uptime monitoring tool | Monitoring |
+| [**MongoExpress**](https://github.com/mongo-express/mongo-express) | Mongodb admin interface | Database Management |
 
 ## 🤝 Contributing
 

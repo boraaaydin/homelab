@@ -1,0 +1,23 @@
+services:
+  mongo-express:
+    image: mongo-express:${MONGO_EXPRESS_TAG}
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    networks:
+      - shared_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongo-express.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)"
+      - "traefik.http.routers.mongo-express.tls=true"
+      - "traefik.http.routers.mongo-express.tls.certresolver=cloudflare"
+      - "traefik.http.services.mongo-express.loadbalancer.server.port=8081"
+
+networks:
+  shared_network:
+    external: true

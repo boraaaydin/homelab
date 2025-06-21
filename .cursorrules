@@ -1,6 +1,7 @@
 ## About Project
 - This project is launching open source apps with docker compose
 - Cloudflare is responsible to create ssl certificate with help of letsencrypt
+- Every App should be listed in README.md Available Applications sections.
 
 ## Conventions
 - Use English when commiting files

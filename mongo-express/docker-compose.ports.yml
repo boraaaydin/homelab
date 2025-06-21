@@ -1,0 +1,4 @@
+services:
+  mongo-express:
+    ports:
+      - "${HOST_PORT:-8081}:8081"
