@@ -10,6 +10,13 @@ DOCKER_COMPOSE=docker-compose
 
 setup:
 	@echo "Setting up $(APP_NAME)..."
+	@if [ ! -f .env ]; then \
+		cp .env.example .env; \
+		echo "Created .env file from .env.example"; \
+		echo "Please edit .env file with your configuration"; \
+	else \
+		echo ".env file already exists"; \
+	fi
 
 clean:
 	$(DOCKER_COMPOSE) down -v --remove-orphans

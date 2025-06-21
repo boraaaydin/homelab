@@ -15,9 +15,29 @@ services:
       - mongodb-log:/var/log/mongodb/
     env_file:
       - .env
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-    #   MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
-    ports:
-      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+    networks:
+      - shared_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongodb.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)"
+      - "traefik.http.routers.mongodb.tls=true"
+      - "traefik.http.routers.mongodb.tls.certresolver=cloudflare"
+      - "traefik.http.services.mongodb.loadbalancer.server.port=27017"
+      - "traefik.tcp.routers.mongodb-tcp.rule=HostSNI(`${DOMAIN_PREFIX}.${DOMAIN}`)"
+      - "traefik.tcp.routers.mongodb-tcp.tls=true"
+      - "traefik.tcp.routers.mongodb-tcp.tls.certresolver=cloudflare"
+      - "traefik.tcp.services.mongodb-tcp.loadbalancer.server.port=27017"
+
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-log:
+    driver: local
+
+networks:
+  shared_network:
+    external: true
