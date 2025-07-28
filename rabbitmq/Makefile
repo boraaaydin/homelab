@@ -59,8 +59,8 @@ clean:
 	@echo "$(GREEN)Removed containers and volumes.$(NC)"
 
 dns-mac:
-	@echo "$(GREEN)Adding $(FULL_DOMAIN) to /private/etc/hosts...$(NC)"
-	@grep -q "$(FULL_DOMAIN)" /private/etc/hosts || sudo sh -c 'echo "127.0.0.1 $(FULL_DOMAIN)" >> /private	/etc/hosts'
+	@echo "$(GREEN)Adding $(FULL_DOMAIN) to /etc/hosts...$(NC)"
+	@grep -q "$(FULL_DOMAIN)" /etc/hosts || sudo sh -c 'echo "127.0.0.1 $(FULL_DOMAIN)" >> /private	/etc/hosts'
 	@echo "$(GREEN)Done! $(FULL_DOMAIN) now points to 127.0.0.1$(NC)"
 
 dns-linux:
