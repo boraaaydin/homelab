@@ -3,6 +3,9 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: redis-commander
     restart: unless-stopped
+    depends_on:
+      valkey:
+        condition: service_healthy
     environment:
       REDIS_HOST: ${REDIS_HOST:-valkey}
       REDIS_PORT: ${REDIS_PORT:-6379}

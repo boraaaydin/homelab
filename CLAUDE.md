@@ -119,3 +119,4 @@ Applications use two Docker Compose configurations:
 The Makefile automatically selects the appropriate configuration based on environment variables.
 
 - Always use rules in `.cursorrules`
+- Use Default docker context before running any docker command
