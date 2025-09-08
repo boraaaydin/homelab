@@ -7,7 +7,7 @@ ifneq (,$(wildcard .env))
 endif
 
 # Docker Compose commands
-DC = docker compose
+DC = docker --context=default compose
 
 # Default target
 .DEFAULT_GOAL := help
@@ -39,7 +39,7 @@ logs: ## Show container logs
 
 traefik-logs: ## Show Traefik logs filtered for miniflux
 	@echo "🔍 Showing Traefik logs for miniflux..."
-	@docker logs traefik 2>&1 | grep -i miniflux
+	@docker --context=default logs traefik 2>&1 | grep -i miniflux
 
 ps: ## List running containers
 	@$(DC) ps

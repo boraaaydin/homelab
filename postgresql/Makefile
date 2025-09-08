@@ -1,6 +1,6 @@
 # Docker commands
-DOCKER_COMPOSE := docker compose
-DOCKER := docker
+DOCKER_COMPOSE := docker --context=default compose
+DOCKER := docker --context=default
 
 # Include environment variables
 ifneq (,$(wildcard .env))

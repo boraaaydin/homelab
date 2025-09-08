@@ -7,7 +7,7 @@ RED=\033[0;31m
 NC=\033[0m
 
 # Docker compose command
-DOCKER_COMPOSE=docker-compose
+DOCKER_COMPOSE=docker --context=default compose
 
 # Define full domain
 FULL_DOMAIN=$(DOMAIN_PREFIX).$(DOMAIN)
@@ -41,7 +41,7 @@ logs: ## View logs
 
 traefik-logs: ## View traefik logs for redis-commander
 	@echo "$(YELLOW)Showing Traefik logs filtered for redis-commander...$(NC)"
-	@docker logs traefik 2>&1 | grep -i "redis-commander\|$(DOMAIN_PREFIX).$(DOMAIN)"
+	@docker --context=default logs traefik 2>&1 | grep -i "redis-commander\|$(DOMAIN_PREFIX).$(DOMAIN)"
 
 ps: ## Check service status
 	@$(DOCKER_COMPOSE) ps

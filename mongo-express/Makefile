@@ -6,7 +6,7 @@ APP_NAME=mongo-express
 DOMAIN_PREFIX?=$(DOMAIN_PREFIX)
 DOMAIN?=$(DOMAIN)
 FULL_DOMAIN=$(DOMAIN_PREFIX).$(DOMAIN)
-DOCKER_COMPOSE=docker-compose
+DOCKER_COMPOSE=docker --context=default compose
 
 setup:
 	@echo "Setting up $(APP_NAME)..."
@@ -40,7 +40,7 @@ logs:
 	$(DOCKER_COMPOSE) logs -f --tail=100 $(APP_NAME)
 
 traefik-logs:
-	docker logs traefik 2>&1 | grep $(APP_NAME)
+	docker --context=default logs traefik 2>&1 | grep $(APP_NAME)
 
 ps:
 	$(DOCKER_COMPOSE) ps

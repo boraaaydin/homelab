@@ -1,5 +1,5 @@
 # Docker commands
-DOCKER_COMPOSE := docker compose
+DOCKER_COMPOSE := docker --context=default compose
 
 # Colors for output
 GREEN := \033[0;32m

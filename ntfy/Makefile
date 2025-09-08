@@ -17,26 +17,26 @@ clean: ## Remove all data
 
 .PHONY: up
 up: ## Start containers
-	docker-compose up -d
+	docker --context=default compose up -d
 
 .PHONY: down
 down: ## Stop containers
-	docker-compose down
+	docker --context=default compose down
 
 .PHONY: restart
 restart: down up ## Restart containers
 
 .PHONY: logs
 logs: ## View container logs
-	docker-compose logs -f
+	docker --context=default compose logs -f
 
 .PHONY: traefik-logs
 traefik-logs: ## View Traefik logs
-	docker-compose logs -f traefik
+	docker --context=default compose logs -f traefik
 
 .PHONY: ps
 ps: ## List containers
-	docker-compose ps
+	docker --context=default compose ps
 
 .PHONY: dns-mac
 dns-mac: ## Add DNS record to /private/etc/hosts (MacOS)

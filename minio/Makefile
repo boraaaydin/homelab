@@ -2,7 +2,7 @@
 
 # Variables
 APP_NAME := minio
-DOCKER_COMPOSE := docker compose
+DOCKER_COMPOSE := docker --context=default compose
 ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
@@ -74,7 +74,7 @@ logs:
 # View Traefik logs for this app
 traefik-logs:
 	@echo "Viewing Traefik logs for $(APP_NAME)..."
-	docker logs traefik --tail 100 -f 2>&1 | grep "`grep DOMAIN_PREFIX $(ENV_FILE) | cut -d '=' -f2`.`grep DOMAIN $(ENV_FILE) | cut -d '=' -f2`" || echo "No logs found for $(APP_NAME) in Traefik, or .env file not configured."
+	docker --context=default logs traefik --tail 100 -f 2>&1 | grep "`grep DOMAIN_PREFIX $(ENV_FILE) | cut -d '=' -f2`.`grep DOMAIN $(ENV_FILE) | cut -d '=' -f2`" || echo "No logs found for $(APP_NAME) in Traefik, or .env file not configured."
 
 
 # List containers

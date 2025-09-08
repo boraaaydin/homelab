@@ -21,26 +21,26 @@ setup:
 	fi
 
 up:
-	docker compose up -d
+	docker --context=default compose up -d
 	@if [ -f docker-compose.ports.yml ]; then \
-		docker compose -f docker-compose.yml -f docker-compose.ports.yml up -d; \
+		docker --context=default compose -f docker-compose.yml -f docker-compose.ports.yml up -d; \
 	else \
-		docker compose up -d; \
+		docker --context=default compose up -d; \
 	fi
 
 down:
-	docker compose down
+	docker --context=default compose down
 
 restart: down up
 
 logs:
-	docker compose logs -f
+	docker --context=default compose logs -f
 
 traefik-logs:
-	docker compose logs -f traefik
+	docker --context=default compose logs -f traefik
 
 ps:
-	docker compose ps
+	docker --context=default compose ps
 
 clean:
-	docker compose down -v --remove-orphans 
+	docker --context=default compose down -v --remove-orphans 

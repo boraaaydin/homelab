@@ -6,8 +6,8 @@ else
 endif
 
 # Docker commands
-DOCKER := docker
-DOCKER_COMPOSE := docker compose
+DOCKER := docker --context=default
+DOCKER_COMPOSE := docker --context=default compose
 
 # Network name
 NETWORK_NAME := shared_network

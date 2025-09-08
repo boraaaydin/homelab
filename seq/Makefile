@@ -1,5 +1,5 @@
 # Docker commands
-DOCKER_COMPOSE := docker compose
+DOCKER_COMPOSE := docker --context=default compose
 
 # Colors for output
 GREEN := \033[0;32m
@@ -76,7 +76,7 @@ ps:
 # Clean up
 clean: down
 	@echo "Cleaning up Seq data..."
-	@docker volume rm seq_seq_data 2>/dev/null || true
+	@docker --context=default volume rm seq_seq_data 2>/dev/null || true
 	@echo "$(GREEN)Cleanup completed.$(NC)"
 
 # DNS entries for different operating systems

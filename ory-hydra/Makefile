@@ -8,7 +8,7 @@ YELLOW=\033[1;33m
 NC=\033[0m
 
 # Docker compose command
-DOCKER_COMPOSE=docker compose
+DOCKER_COMPOSE=docker --context=default compose
 
 # Get full domain from env variables
 FULL_DOMAIN=${DOMAIN_PREFIX}.${DOMAIN}
@@ -53,7 +53,7 @@ logs:
 	@$(DOCKER_COMPOSE) logs -f
 
 traefik-logs:
-	@docker logs -f traefik 2>&1 | grep "$(DOMAIN_PREFIX).$(DOMAIN)"
+	@docker --context=default logs -f traefik 2>&1 | grep "$(DOMAIN_PREFIX).$(DOMAIN)"
 
 ps:
 	@$(DOCKER_COMPOSE) ps

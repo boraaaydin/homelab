@@ -5,7 +5,7 @@ RED    := $(shell tput -Txterm setaf 1)
 NC     := $(shell tput -Txterm sgr0)
 
 # Docker compose command
-DOCKER_COMPOSE = docker compose
+DOCKER_COMPOSE = docker --context=default compose
 
 # Load environment variables
 include .env
@@ -57,18 +57,18 @@ logs:
 	@$(DOCKER_COMPOSE) logs -f
 
 traefik-logs:
-	@docker logs -f traefik 2>&1 | grep "pgadmin"
+	@docker --context=default logs -f traefik 2>&1 | grep "pgadmin"
 
 ps:
 	@$(DOCKER_COMPOSE) ps
 
 clean: down
 	@echo "$(GREEN)Removing PgAdmin volumes...$(NC)"
-	@docker volume rm saytak_pgadmin || true
+	@docker --context=default volume rm saytak_pgadmin || true
 
 test-health:
 	@echo "$(GREEN)Testing health check inside container...$(NC)"
-	@docker exec pgadmin4_container curl -f http://localhost:80/misc/ping || echo "$(RED)Health check failed$(NC)"
+	@docker --context=default exec pgadmin4_container curl -f http://localhost:80/misc/ping || echo "$(RED)Health check failed$(NC)"
 
 dns-mac:
 	@echo "$(GREEN)Adding DNS entry to macOS hosts file...$(NC)"

@@ -18,31 +18,31 @@ setup: ## Gerekli dosyaları ve ayarları hazırlar
 
 .PHONY: up
 up: ## Konteynerleri başlatır
-	docker compose pull
-	docker compose up -d
+	docker --context=default compose pull
+	docker --context=default compose up -d
 
 .PHONY: down
 down: ## Konteynerleri durdurur
-	docker compose down
+	docker --context=default compose down
 
 .PHONY: restart
 restart: down up ## Konteynerleri yeniden başlatır
 
 .PHONY: logs
 logs: ## Konteyner loglarını gösterir
-	docker compose logs -f
+	docker --context=default compose logs -f
 
 .PHONY: traefik-logs
 traefik-logs: ## Traefik loglarını gösterir
-	docker compose logs -f traefik
+	docker --context=default compose logs -f traefik
 
 .PHONY: ps
 ps: ## Çalışan konteynerleri listeler
-	docker compose ps
+	docker --context=default compose ps
 
 .PHONY: clean
 clean: down ## Tüm konteynerleri ve volumeleri temizler
-	docker compose down -v
+	docker --context=default compose down -v
 	rm -rf ./media ./certs ./custom-templates
 
 .PHONY: dns-mac

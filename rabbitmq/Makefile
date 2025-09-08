@@ -1,6 +1,6 @@
 include .env
 
-DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE = docker --context=default compose
 GREEN = \033[0;32m
 RED = \033[0;31m
 YELLOW = \033[0;33m
