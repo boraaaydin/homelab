@@ -1,0 +1,30 @@
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: seq_container
+    restart: always
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINUSERNAME: ${SEQ_ADMIN_USERNAME:-admin}
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:-admin123}
+      SEQ_STORAGE_RETENTIONINDAYS: ${SEQ_RETENTION_DAYS:-7}
+      SEQ_STORAGE_MAXSIZEBYTES: ${SEQ_MAX_SIZE_BYTES:-1073741824}
+    volumes:
+      - seq_data:/data
+    networks:
+      - shared_network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.seq.rule=Host(`seq.${BASE_DOMAIN}`)'
+      - 'traefik.http.routers.seq.entrypoints=web,websecure'
+      - 'traefik.http.routers.seq.tls=true'
+      - 'traefik.http.routers.seq.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.seq.service=seq'
+      - 'traefik.http.services.seq.loadbalancer.server.port=80'
+networks:
+  shared_network:
+    external: true
+
+volumes:
+  seq_data:
+    driver: local

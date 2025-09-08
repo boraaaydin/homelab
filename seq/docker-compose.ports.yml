@@ -1,0 +1,5 @@
+services:
+  seq:
+    ports:
+      - "${SEQ_HOST_PORT:-8081}:80"
+      - "${SEQ_API_PORT:-5341}:5341"
