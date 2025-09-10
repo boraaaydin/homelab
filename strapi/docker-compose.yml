@@ -1,0 +1,58 @@
+services:
+  strapi:
+    image: strapi/strapi
+    container_name: strapi
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.strapi.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.strapi.entrypoints=web'
+      # HTTPS Router
+      - 'traefik.http.routers.strapi-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.strapi-secure.entrypoints=websecure'
+      - 'traefik.http.routers.strapi-secure.tls=true'
+      - 'traefik.http.routers.strapi-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.strapi.loadbalancer.server.port=${STRAPI_PORT}'
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      STRAPI_HOST: ${DOMAIN_PREFIX}.${DOMAIN}
+      STRAPI_PORT: ${STRAPI_PORT}
+      NODE_ENV: production
+    volumes:
+      - strapi_uploads:/opt/app/public/uploads
+      - strapi_config:/opt/app/config
+      - strapi_src:/opt/app/src
+    networks:
+      - shared_network
+    deploy:
+      resources:
+        limits:
+          cpus: "${CPU_LIMIT}"
+          memory: "${MEMORY_LIMIT}"
+          pids: "${PIDS_LIMIT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+
+volumes:
+  strapi_uploads:
+  strapi_config:
+  strapi_src:
+
+networks:
+  shared_network:
+    external: true

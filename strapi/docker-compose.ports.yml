@@ -1,0 +1,4 @@
+services:
+  strapi:
+    ports:
+      - "${HOST_PORT}:${STRAPI_PORT}"
