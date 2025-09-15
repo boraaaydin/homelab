@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker ps:*)",
+      "Bash(docker inspect:*)",
+      "Bash(docker logs:*)",
+      "Bash(make:*)",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Read(//Users/bora/Code/homelab/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

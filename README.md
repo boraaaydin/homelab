@@ -67,6 +67,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**PostgreSQL**](https://www.postgresql.org/) | Enterprise-grade relational database | Database |
 | [**MongoDB**](https://www.mongodb.com//) | Nosql database | Database |
 | [**Valkey**](https://valkey.io/) | Fork of Redis. In memory data store | Database |
+| [**Couchbase**](https://www.couchbase.com/) | NoSQL document database with SQL-like query language | Database |
 | [**Minio**](https://min.io/) | S3 Compatible Object Storage | Object Storage |
 | [**Ory/Hydra**](https://www.ory.sh/hydra) | Oauth2 Provider | Authentication |
 

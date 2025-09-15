@@ -1,0 +1,19 @@
+services:
+  couchbase:
+    image: couchbase:${COUCHBASE_TAG:-community}
+    container_name: couchbase
+    deploy:
+      replicas: 1
+    networks:
+      - shared_network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.couchbase.rule=Host(`${DOMAIN_PREFIX:-couchbase}.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.couchbase.entrypoints=websecure"
+      - "traefik.http.routers.couchbase.tls.certresolver=cloudflare"
+      - "traefik.http.services.couchbase.loadbalancer.server.port=8091"
+
+networks:
+  shared_network:
+    external: true

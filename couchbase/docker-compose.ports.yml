@@ -1,0 +1,12 @@
+# Docker Compose override for localhost port access
+# This file is used when HOST_PORT is defined in .env
+# Usage: docker compose -f docker-compose.yml -f docker-compose.ports.yml up -d
+
+services:
+  couchbase:
+    ports:
+      - "${HOST_PORT:-8091}:8091"
+      - "${HOST_PORT_VIEWS:-8092}:8092"
+      - "${HOST_PORT_QUERY:-8093}:8093"
+      - "${HOST_PORT_SEARCH:-8094}:8094"
+      - "${HOST_PORT_DATA:-11210}:11210"
