@@ -7,6 +7,11 @@ services:
     networks:
       - shared_network
     restart: unless-stopped
+    environment:
+      - CLUSTER_NAME=${CLUSTER_NAME:-couchbase-cluster}
+      - COUCHBASE_ADMINISTRATOR_USERNAME=${COUCHBASE_ADMINISTRATOR_USERNAME:-Administrator}
+      - COUCHBASE_ADMINISTRATOR_PASSWORD=${COUCHBASE_ADMINISTRATOR_PASSWORD:-password}
+      - COUCHBASE_BUCKET=${COUCHBASE_BUCKET:-default}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.couchbase.rule=Host(`${DOMAIN_PREFIX:-couchbase}.${DOMAIN:-localhost}`)"
