@@ -16,7 +16,7 @@ ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns
+.PHONY: setup up down restart logs ps clean dns check-dns
 
 # Setup .env file from example
 setup:
@@ -29,7 +29,7 @@ setup:
 	fi
 
 # Start containers (can be overridden for complex services)
-up: setup
+up: setup check-dns
 	@echo "Starting $(APP_NAME)..."
 	@# Source .env file to get HOST_PORT
 	@if [ -f $(ENV_FILE) ]; then \
@@ -101,7 +101,13 @@ dns-mac: setup
 		exit 1; \
 	fi; \
 	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN\|^BASE_DOMAIN\|^CUSTOMDOMAIN' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
 	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
 		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
 		exit 1; \
@@ -121,7 +127,13 @@ dns-linux: setup
 		exit 1; \
 	fi; \
 	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN\|^BASE_DOMAIN\|^CUSTOMDOMAIN' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
 	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
 		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
 		exit 1; \
@@ -141,7 +153,13 @@ dns-windows: setup
 		exit 1; \
 	fi; \
 	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN\|^BASE_DOMAIN\|^CUSTOMDOMAIN' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
 	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
 		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
 		exit 1; \
@@ -150,15 +168,79 @@ dns-windows: setup
 	echo "$(YELLOW)Please add the following line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
 	echo "127.0.0.1       $${FULL_DOMAIN}"
 
+# Check DNS record for the service
+check-dns: setup
+	@if [ ! -f $(ENV_FILE) ]; then \
+		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
+		exit 1; \
+	fi; \
+	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
+	if [ -z "$${DOMAIN_VALUE}" ]; then \
+		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
+	fi; \
+	HOST_PORT_VALUE=$$(grep '^HOST_PORT' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
+	if [ -n "$${DOMAIN_PREFIX_VALUE}" ] && [ -n "$${DOMAIN_VALUE}" ]; then \
+		FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
+		echo "$(YELLOW)Checking DNS for $${FULL_DOMAIN}...$(NC)"; \
+		HOSTS_FOUND=0; \
+		if [ -f /etc/hosts ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" /etc/hosts 2>/dev/null; then \
+			echo "$(GREEN)✓ Found in /etc/hosts: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
+			HOSTS_FOUND=1; \
+		elif [ -f /private/etc/hosts ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts 2>/dev/null; then \
+			echo "$(GREEN)✓ Found in /private/etc/hosts: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
+			HOSTS_FOUND=1; \
+		fi; \
+		if [ "$$HOSTS_FOUND" -eq 0 ]; then \
+			if command -v nslookup > /dev/null 2>&1; then \
+				DNS_RESULT=$$(nslookup "$${FULL_DOMAIN}" 2>/dev/null | grep -E '^Address:|^Non-authoritative answer:' -A 1 | tail -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1); \
+				if [ -n "$${DNS_RESULT}" ]; then \
+					echo "$(GREEN)✓ DNS record found: $${FULL_DOMAIN} -> $${DNS_RESULT}$(NC)"; \
+					if [ "$${DNS_RESULT}" = "127.0.0.1" ]; then \
+						echo "$(GREEN)✓ Domain points to localhost (local development)$(NC)"; \
+					else \
+						echo "$(YELLOW)⚠ Domain points to external IP: $${DNS_RESULT}$(NC)"; \
+					fi; \
+				else \
+					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
+					echo "$(YELLOW)Run 'make dns' to add local DNS entry$(NC)"; \
+				fi; \
+			elif command -v dig > /dev/null 2>&1; then \
+				DNS_RESULT=$$(dig +short "$${FULL_DOMAIN}" 2>/dev/null | head -1); \
+				if [ -n "$${DNS_RESULT}" ]; then \
+					echo "$(GREEN)✓ DNS record found: $${FULL_DOMAIN} -> $${DNS_RESULT}$(NC)"; \
+					if [ "$${DNS_RESULT}" = "127.0.0.1" ]; then \
+						echo "$(GREEN)✓ Domain points to localhost (local development)$(NC)"; \
+					else \
+						echo "$(YELLOW)⚠ Domain points to external IP: $${DNS_RESULT}$(NC)"; \
+					fi; \
+				else \
+					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
+					echo "$(YELLOW)Run 'make dns' to add local DNS entry$(NC)"; \
+				fi; \
+			else \
+				echo "$(YELLOW)⚠ nslookup or dig not available, skipping DNS check$(NC)"; \
+			fi; \
+		fi; \
+	elif [ -n "$${HOST_PORT_VALUE}" ]; then \
+		echo "$(GREEN)✓ Service configured for localhost access on port $${HOST_PORT_VALUE}$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠ No domain or port configuration found$(NC)"; \
+	fi
+
 # Common help function (can be extended in service Makefiles)
 define COMMON_HELP
 Available commands:
   setup          - Setup .env file from .env.example
-  up             - Start containers
+  up             - Start containers (includes DNS check)
   down           - Stop containers
   restart        - Restart containers
   logs           - View container logs
   ps             - List containers
   clean          - Stop and remove containers and volumes
   dns            - Auto-detect OS and add domain to hosts file
+  check-dns      - Check DNS record for the service domain
 endef
