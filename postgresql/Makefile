@@ -1,6 +1,8 @@
-# Docker commands
-DOCKER_COMPOSE := docker --context=default compose
-DOCKER := docker --context=default
+# Variables
+APP_NAME := postgresql
+
+# Include common definitions and targets
+include ../common.mk
 
 # Include environment variables
 ifneq (,$(wildcard .env))
@@ -8,23 +10,15 @@ ifneq (,$(wildcard .env))
     export
 endif
 
-# Colors for output
-GREEN := \033[0;32m
-RED := \033[0;31m
-YELLOW := \033[1;33m
-NC := \033[0m
-
-.PHONY: all up down help check-ready
-
 # Default target
 all: help
 
 # Help message
 help:
 	@echo "Available commands:"
-	@echo "  make up          - Start PostgreSQL service"
-	@echo "  make down        - Stop PostgreSQL service"
-	@echo "  make check-ready - Check if PostgreSQL is ready"
+	@$(info $(COMMON_HELP))
+	@echo "  check-ready    - Check if PostgreSQL is ready"
+	@echo "  help           - Show this help message"
 
 # Check if PostgreSQL is ready
 check-ready:
@@ -36,21 +30,23 @@ check-ready:
 		exit 1; \
 	fi
 
-# Start service
-up:
-	@echo "Starting PostgreSQL..."
+# Override up command to start traefik first
+up: setup
+	@echo "Starting $(APP_NAME)..."
 	@cd ../traefik && $(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting traefik.$(NC)"; exit 1; }
-	@if [ -n "$(HOST_PORT)" ]; then \
-		echo "$(YELLOW)Port $(HOST_PORT) will be exposed$(NC)"; \
-		$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.ports.yml up -d || { echo "$(RED)Error starting PostgreSQL.$(NC)"; exit 1; }; \
+	@# Source .env file to get HOST_PORT
+	@if [ -f $(ENV_FILE) ]; then \
+		set -a; . $(ENV_FILE); set +a; \
+		if [ -n "$${HOST_PORT}" ]; then \
+			echo "$(YELLOW)Port $${HOST_PORT} will be exposed$(NC)"; \
+			$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.ports.yml up -d || { echo "$(RED)Error starting $(APP_NAME).$(NC)"; exit 1; }; \
+		else \
+			echo "$(YELLOW)No HOST_PORT defined, service will only be available through Traefik$(NC)"; \
+			$(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting $(APP_NAME).$(NC)"; exit 1; }; \
+		fi; \
 	else \
-		echo "$(YELLOW)No HOST_PORT defined, service will only be available through Traefik$(NC)"; \
-		$(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting PostgreSQL.$(NC)"; exit 1; }; \
+		$(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting $(APP_NAME).$(NC)"; exit 1; }; \
 	fi
-	@echo "$(GREEN)PostgreSQL started successfully.$(NC)"
+	@echo "$(GREEN)$(APP_NAME) started successfully.$(NC)"
 
-# Stop service
-down:
-	@echo "Stopping PostgreSQL..."
-	@$(DOCKER_COMPOSE) down
-	@echo "$(GREEN)PostgreSQL stopped successfully.$(NC)" 
+.PHONY: check-ready 
