@@ -1,0 +1,4 @@
+services:
+  bugsink:
+    ports:
+      - "${HOST_PORT}:${BUGSINK_PORT}"

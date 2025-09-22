@@ -1,0 +1,44 @@
+services:
+  bugsink:
+    image: bugsink/bugsink:${BUGSINK_VERSION}
+    container_name: bugsink
+    restart: unless-stopped
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      CREATE_SUPERUSER: ${CREATE_SUPERUSER}
+      PORT: ${BUGSINK_PORT}
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_NAME}
+      BEHIND_HTTPS_PROXY: ${BEHIND_HTTPS_PROXY}
+      BASE_URL: https://${DOMAIN_PREFIX}.${DOMAIN}
+    volumes:
+      - bugsink_data:/app/data
+    networks:
+      - shared_network
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import requests; requests.get(\"http://localhost:${BUGSINK_PORT}/\").raise_for_status()'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.bugsink.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.bugsink.entrypoints=web'
+      - 'traefik.http.routers.bugsink.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.bugsink-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.bugsink-secure.entrypoints=websecure'
+      - 'traefik.http.routers.bugsink-secure.tls=true'
+      - 'traefik.http.routers.bugsink-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.bugsink.loadbalancer.server.port=${BUGSINK_PORT}'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+volumes:
+  bugsink_data:
+
+networks:
+  shared_network:
+    external: true

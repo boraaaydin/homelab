@@ -35,5 +35,9 @@ Analyze the provided docker-compose.yml file and:
 - Create concise README.md explaining how to use the application and its dependencies
 - Ensure compliance with CLAUDE.md requirements (shared_network, Traefik integration, etc.)
 - Add app information to README.md on root level.
+- If a database is needed, use one of the databases hosted in this repo. See `README.md`
+- If any other databases are needed. Stop and ask user to add it.
+- Use DOCKER_TAG environment variable for placeholder of docker labels
+
 
 All generated files should follow the patterns established in the homelab repository and be ready for immediate use.

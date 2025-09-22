@@ -89,6 +89,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | Application | Description | Category |
 |------------|-------------|----------|
 | [**ShellNGN**](https://shellngn.com/) | Comprehensive web-based terminal suite | DevTools |
+| [**Bugsink**](https://bugsink.com/) | Python error tracking and monitoring tool similar to Sentry | Monitoring |
 | [**Glitchtip**](https://glitchtip.com/) | Error tracking, Application performance, uptime monitoring tool | Monitoring |
 | [**MongoExpress**](https://github.com/mongo-express/mongo-express) | Mongodb admin interface | Database Management |
 | [**Seq**](https://datalust.co/seq) | Centralized structured logging platform | Logging |
