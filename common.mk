@@ -15,8 +15,19 @@ NC := \033[0m
 ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
+# Common function to extract and validate domain variables
+define get_domain_vars
+	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"'' || grep '^BASE_DOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"'' || grep '^CUSTOMDOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"''); \
+	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
+		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
+		exit 1; \
+	fi; \
+	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"
+endef
+
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns-auto check-dns
+.PHONY: setup up down restart logs ps clean dns dns-auto check-dns
 
 # Setup .env file from example
 setup:
@@ -71,6 +82,9 @@ clean:
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@echo "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)"
 
+# Manual DNS command for interactive use
+dns: dns-auto
+
 # Auto-detect OS and run appropriate DNS command (silent version for automation)
 dns-auto: setup
 	@OS=$$(uname -s); \
@@ -96,29 +110,15 @@ dns-mac-auto: setup
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
 	fi; \
-	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
-		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
-		exit 1; \
-	fi; \
-	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
-	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts; then \
+	$(get_domain_vars); \
+	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts 2>/dev/null; then \
 		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in /private/etc/hosts.$(NC)"; \
 	else \
-		echo "Adding $${FULL_DOMAIN} to /private/etc/hosts (sudo required)..."; \
-		if echo "127.0.0.1       $${FULL_DOMAIN}" | sudo tee -a /private/etc/hosts > /dev/null 2>&1; then \
-			echo "$(GREEN)✓ $${FULL_DOMAIN} added to /private/etc/hosts.$(NC)"; \
-		else \
-			echo "$(RED)✗ Failed to add DNS entry. Please run 'make dns' manually.$(NC)"; \
-			exit 1; \
-		fi; \
+		echo "Adding $${FULL_DOMAIN} to /private/etc/hosts..."; \
+		echo "$(YELLOW)Please run this command manually:$(NC)"; \
+		echo "$(YELLOW)echo '127.0.0.1       $${FULL_DOMAIN}' | sudo tee -a /private/etc/hosts$(NC)"; \
+		echo "$(YELLOW)Then run 'make up' again.$(NC)"; \
+		exit 1; \
 	fi
 
 # DNS entries for Linux (automated version, no prompts)
@@ -127,29 +127,15 @@ dns-linux-auto: setup
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
 	fi; \
-	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
-		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
-		exit 1; \
-	fi; \
-	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
-	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /etc/hosts; then \
+	$(get_domain_vars); \
+	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /etc/hosts 2>/dev/null; then \
 		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in /etc/hosts.$(NC)"; \
 	else \
-		echo "Adding $${FULL_DOMAIN} to /etc/hosts (sudo required)..."; \
-		if sudo bash -c "echo '127.0.0.1       $${FULL_DOMAIN}' >> /etc/hosts" 2>&1; then \
-			echo "$(GREEN)✓ $${FULL_DOMAIN} added to /etc/hosts.$(NC)"; \
-		else \
-			echo "$(RED)✗ Failed to add DNS entry. Please run 'make dns' manually.$(NC)"; \
-			exit 1; \
-		fi; \
+		echo "Adding $${FULL_DOMAIN} to /etc/hosts..."; \
+		echo "$(YELLOW)Please run this command manually:$(NC)"; \
+		echo "$(YELLOW)echo '127.0.0.1       $${FULL_DOMAIN}' | sudo tee -a /etc/hosts$(NC)"; \
+		echo "$(YELLOW)Then run 'make up' again.$(NC)"; \
+		exit 1; \
 	fi
 
 # DNS entries for Windows (automated version)
@@ -158,19 +144,7 @@ dns-windows-auto: setup
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
 	fi; \
-	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_PREFIX_VALUE}" ] || [ -z "$${DOMAIN_VALUE}" ]; then \
-		echo "$(RED)DOMAIN_PREFIX or DOMAIN not set in .env file.$(NC)"; \
-		exit 1; \
-	fi; \
-	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
+	$(get_domain_vars); \
 	HOSTS_FILE="/c/Windows/System32/drivers/etc/hosts"; \
 	if [ ! -f "$${HOSTS_FILE}" ]; then \
 		HOSTS_FILE="/mnt/c/Windows/System32/drivers/etc/hosts"; \
@@ -181,18 +155,16 @@ dns-windows-auto: setup
 		echo "127.0.0.1       $${FULL_DOMAIN}"; \
 		exit 1; \
 	fi; \
-	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" "$${HOSTS_FILE}"; then \
+	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" "$${HOSTS_FILE}" 2>/dev/null; then \
 		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in Windows hosts file.$(NC)"; \
 	else \
 		echo "Adding $${FULL_DOMAIN} to Windows hosts file (Administrator privileges required)..."; \
-		if echo "127.0.0.1       $${FULL_DOMAIN}" >> "$${HOSTS_FILE}" 2>/dev/null; then \
-			echo "$(GREEN)✓ $${FULL_DOMAIN} added to Windows hosts file.$(NC)"; \
-		else \
-			echo "$(RED)✗ Failed to add DNS entry. Run as Administrator or add manually:$(NC)"; \
-			echo "$(YELLOW)Add this line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
-			echo "127.0.0.1       $${FULL_DOMAIN}"; \
-			exit 1; \
-		fi; \
+		echo "127.0.0.1       $${FULL_DOMAIN}" >> "$${HOSTS_FILE}" 2>/dev/null && \
+		echo "$(GREEN)✓ $${FULL_DOMAIN} added to Windows hosts file.$(NC)" || \
+		{ echo "$(RED)✗ Failed to add DNS entry. Run as Administrator or add manually:$(NC)"; \
+		  echo "$(YELLOW)Add this line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
+		  echo "127.0.0.1       $${FULL_DOMAIN}"; \
+		  exit 1; }; \
 	fi
 
 # Check DNS record for the service
@@ -201,15 +173,9 @@ check-dns: setup
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
 	fi; \
-	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
-	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^BASE_DOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	if [ -z "$${DOMAIN_VALUE}" ]; then \
-		DOMAIN_VALUE=$$(grep '^CUSTOMDOMAIN=' $(ENV_FILE) | head -1 | cut -d '=' -f2 | tr -d ' "'\'''); \
-	fi; \
-	HOST_PORT_VALUE=$$(grep '^HOST_PORT' $(ENV_FILE) | cut -d '=' -f2 | tr -d ' "'\'''); \
+	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"''); \
+	DOMAIN_VALUE=$$(grep '^DOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"'' || grep '^BASE_DOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"'' || grep '^CUSTOMDOMAIN=' $(ENV_FILE) 2>/dev/null | head -1 | cut -d '=' -f2 | tr -d ' "'"'"''); \
+	HOST_PORT_VALUE=$$(grep '^HOST_PORT' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"''); \
 	if [ -n "$${DOMAIN_PREFIX_VALUE}" ] && [ -n "$${DOMAIN_VALUE}" ]; then \
 		FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
 		echo "$(YELLOW)Checking DNS for $${FULL_DOMAIN}...$(NC)"; \
@@ -220,44 +186,19 @@ check-dns: setup
 		elif [ -f /private/etc/hosts ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts 2>/dev/null; then \
 			echo "$(GREEN)✓ Found in /private/etc/hosts: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
 			HOSTS_FOUND=1; \
-		elif [ -f "/c/Windows/System32/drivers/etc/hosts" ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" "/c/Windows/System32/drivers/etc/hosts" 2>/dev/null; then \
-			echo "$(GREEN)✓ Found in Windows hosts file: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
-			HOSTS_FOUND=1; \
-		elif [ -f "/mnt/c/Windows/System32/drivers/etc/hosts" ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" "/mnt/c/Windows/System32/drivers/etc/hosts" 2>/dev/null; then \
-			echo "$(GREEN)✓ Found in Windows hosts file: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
-			HOSTS_FOUND=1; \
 		fi; \
 		if [ "$$HOSTS_FOUND" -eq 0 ]; then \
 			if command -v nslookup > /dev/null 2>&1; then \
 				DNS_RESULT=$$(nslookup "$${FULL_DOMAIN}" 2>/dev/null | grep -E '^Address:|^Non-authoritative answer:' -A 1 | tail -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1); \
 				if [ -n "$${DNS_RESULT}" ]; then \
 					echo "$(GREEN)✓ DNS record found: $${FULL_DOMAIN} -> $${DNS_RESULT}$(NC)"; \
-					if [ "$${DNS_RESULT}" = "127.0.0.1" ]; then \
-						echo "$(GREEN)✓ Domain points to localhost (local development)$(NC)"; \
-					else \
-						echo "$(YELLOW)⚠ Domain points to external IP: $${DNS_RESULT}$(NC)"; \
-					fi; \
 				else \
 					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
-					echo "$(YELLOW)Adding DNS entry automatically...$(NC)"; \
-					$(MAKE) dns-auto; \
-				fi; \
-			elif command -v dig > /dev/null 2>&1; then \
-				DNS_RESULT=$$(dig +short "$${FULL_DOMAIN}" 2>/dev/null | head -1); \
-				if [ -n "$${DNS_RESULT}" ]; then \
-					echo "$(GREEN)✓ DNS record found: $${FULL_DOMAIN} -> $${DNS_RESULT}$(NC)"; \
-					if [ "$${DNS_RESULT}" = "127.0.0.1" ]; then \
-						echo "$(GREEN)✓ Domain points to localhost (local development)$(NC)"; \
-					else \
-						echo "$(YELLOW)⚠ Domain points to external IP: $${DNS_RESULT}$(NC)"; \
-					fi; \
-				else \
-					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
-					echo "$(YELLOW)Adding DNS entry automatically...$(NC)"; \
-					$(MAKE) dns-auto; \
+					echo "$(YELLOW)Run 'make dns' to add DNS entry, then run 'make up' again.$(NC)"; \
+					exit 1; \
 				fi; \
 			else \
-				echo "$(YELLOW)⚠ nslookup or dig not available, skipping DNS check$(NC)"; \
+				echo "$(YELLOW)⚠ nslookup not available, skipping DNS check$(NC)"; \
 			fi; \
 		fi; \
 	elif [ -n "$${HOST_PORT_VALUE}" ]; then \
