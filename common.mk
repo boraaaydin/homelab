@@ -16,7 +16,7 @@ ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns-mac dns-linux dns-windows
+.PHONY: setup up down restart logs ps clean dns
 
 # Setup .env file from example
 setup:
@@ -70,6 +70,29 @@ clean:
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@echo "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)"
+
+# Auto-detect OS and run appropriate DNS command
+dns: setup
+	@OS=$$(uname -s); \
+	case "$$OS" in \
+		Darwin*) \
+			echo "$(YELLOW)Detected macOS, adding DNS entry...$(NC)"; \
+			$(MAKE) dns-mac; \
+			;; \
+		Linux*) \
+			echo "$(YELLOW)Detected Linux, adding DNS entry...$(NC)"; \
+			$(MAKE) dns-linux; \
+			;; \
+		CYGWIN*|MINGW*|MSYS*) \
+			echo "$(YELLOW)Detected Windows, showing DNS instructions...$(NC)"; \
+			$(MAKE) dns-windows; \
+			;; \
+		*) \
+			echo "$(RED)Unknown operating system: $$OS$(NC)"; \
+			echo "Please run one of: make dns-mac, make dns-linux, or make dns-windows"; \
+			exit 1; \
+			;; \
+	esac
 
 # DNS entries for different operating systems
 dns-mac: setup
@@ -137,7 +160,5 @@ Available commands:
   logs           - View container logs
   ps             - List containers
   clean          - Stop and remove containers and volumes
-  dns-mac        - Add domain to macOS hosts file
-  dns-linux      - Add domain to Linux hosts file
-  dns-windows    - Instructions to add domain to Windows hosts file
+  dns            - Auto-detect OS and add domain to hosts file
 endef
