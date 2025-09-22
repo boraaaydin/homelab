@@ -82,11 +82,10 @@ dns-auto: setup
 			$(MAKE) dns-linux-auto; \
 			;; \
 		CYGWIN*|MINGW*|MSYS*) \
-			$(MAKE) dns-windows; \
+			$(MAKE) dns-windows-auto; \
 			;; \
 		*) \
 			echo "$(RED)Unknown operating system: $$OS$(NC)"; \
-			echo "Please run one of: make dns-mac, make dns-linux, or make dns-windows"; \
 			exit 1; \
 			;; \
 	esac
@@ -153,7 +152,8 @@ dns-linux-auto: setup
 		fi; \
 	fi
 
-dns-windows: setup
+# DNS entries for Windows (automated version)
+dns-windows-auto: setup
 	@if [ ! -f $(ENV_FILE) ]; then \
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
@@ -171,8 +171,29 @@ dns-windows: setup
 		exit 1; \
 	fi; \
 	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
-	echo "$(YELLOW)Please add the following line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
-	echo "127.0.0.1       $${FULL_DOMAIN}"
+	HOSTS_FILE="/c/Windows/System32/drivers/etc/hosts"; \
+	if [ ! -f "$${HOSTS_FILE}" ]; then \
+		HOSTS_FILE="/mnt/c/Windows/System32/drivers/etc/hosts"; \
+	fi; \
+	if [ ! -f "$${HOSTS_FILE}" ]; then \
+		echo "$(RED)✗ Could not find Windows hosts file. Please add manually:$(NC)"; \
+		echo "$(YELLOW)Add this line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
+		echo "127.0.0.1       $${FULL_DOMAIN}"; \
+		exit 1; \
+	fi; \
+	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" "$${HOSTS_FILE}"; then \
+		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in Windows hosts file.$(NC)"; \
+	else \
+		echo "Adding $${FULL_DOMAIN} to Windows hosts file (Administrator privileges required)..."; \
+		if echo "127.0.0.1       $${FULL_DOMAIN}" >> "$${HOSTS_FILE}" 2>/dev/null; then \
+			echo "$(GREEN)✓ $${FULL_DOMAIN} added to Windows hosts file.$(NC)"; \
+		else \
+			echo "$(RED)✗ Failed to add DNS entry. Run as Administrator or add manually:$(NC)"; \
+			echo "$(YELLOW)Add this line to C:\\Windows\\System32\\drivers\\etc\\hosts:$(NC)"; \
+			echo "127.0.0.1       $${FULL_DOMAIN}"; \
+			exit 1; \
+		fi; \
+	fi
 
 # Check DNS record for the service
 check-dns: setup
@@ -198,6 +219,12 @@ check-dns: setup
 			HOSTS_FOUND=1; \
 		elif [ -f /private/etc/hosts ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts 2>/dev/null; then \
 			echo "$(GREEN)✓ Found in /private/etc/hosts: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
+			HOSTS_FOUND=1; \
+		elif [ -f "/c/Windows/System32/drivers/etc/hosts" ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" "/c/Windows/System32/drivers/etc/hosts" 2>/dev/null; then \
+			echo "$(GREEN)✓ Found in Windows hosts file: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
+			HOSTS_FOUND=1; \
+		elif [ -f "/mnt/c/Windows/System32/drivers/etc/hosts" ] && grep -q "127.0.0.1.*$${FULL_DOMAIN}" "/mnt/c/Windows/System32/drivers/etc/hosts" 2>/dev/null; then \
+			echo "$(GREEN)✓ Found in Windows hosts file: $${FULL_DOMAIN} -> 127.0.0.1$(NC)"; \
 			HOSTS_FOUND=1; \
 		fi; \
 		if [ "$$HOSTS_FOUND" -eq 0 ]; then \

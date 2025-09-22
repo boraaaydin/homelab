@@ -61,9 +61,7 @@ make clean
 For local development without a domain:
 ```bash
 # Add local DNS entries (run from application directory)
-make dns-mac     # macOS
-make dns-linux   # Linux  
-make dns-windows # Windows (shows manual instructions)
+make dns
 ```
 
 ## Environment Configuration
