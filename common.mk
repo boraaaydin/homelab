@@ -27,7 +27,7 @@ define get_domain_vars
 endef
 
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns dns-auto check-dns
+.PHONY: setup up down restart logs ps clean dns check-dns
 
 # Setup .env file from example
 setup:
@@ -82,11 +82,8 @@ clean:
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@echo "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)"
 
-# Manual DNS command for interactive use
-dns: dns-auto
-
 # Auto-detect OS and run appropriate DNS command (silent version for automation)
-dns-auto: setup
+dns: setup
 	@OS=$$(uname -s); \
 	case "$$OS" in \
 		Darwin*) \
