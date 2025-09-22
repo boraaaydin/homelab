@@ -16,7 +16,7 @@ ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns check-dns
+.PHONY: setup up down restart logs ps clean dns-auto check-dns
 
 # Setup .env file from example
 setup:
@@ -71,20 +71,17 @@ clean:
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@echo "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)"
 
-# Auto-detect OS and run appropriate DNS command
-dns: setup
+# Auto-detect OS and run appropriate DNS command (silent version for automation)
+dns-auto: setup
 	@OS=$$(uname -s); \
 	case "$$OS" in \
 		Darwin*) \
-			echo "$(YELLOW)Detected macOS, adding DNS entry...$(NC)"; \
-			$(MAKE) dns-mac; \
+			$(MAKE) dns-mac-auto; \
 			;; \
 		Linux*) \
-			echo "$(YELLOW)Detected Linux, adding DNS entry...$(NC)"; \
-			$(MAKE) dns-linux; \
+			$(MAKE) dns-linux-auto; \
 			;; \
 		CYGWIN*|MINGW*|MSYS*) \
-			echo "$(YELLOW)Detected Windows, showing DNS instructions...$(NC)"; \
 			$(MAKE) dns-windows; \
 			;; \
 		*) \
@@ -94,8 +91,8 @@ dns: setup
 			;; \
 	esac
 
-# DNS entries for different operating systems
-dns-mac: setup
+# DNS entries for macOS (automated version, no prompts)
+dns-mac-auto: setup
 	@if [ ! -f $(ENV_FILE) ]; then \
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
@@ -113,15 +110,20 @@ dns-mac: setup
 		exit 1; \
 	fi; \
 	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
-	echo "Adding $${FULL_DOMAIN} to /private/etc/hosts..."; \
 	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /private/etc/hosts; then \
-		echo "$(YELLOW)$${FULL_DOMAIN} already exists in /private/etc/hosts.$(NC)"; \
+		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in /private/etc/hosts.$(NC)"; \
 	else \
-		echo "127.0.0.1       $${FULL_DOMAIN}" | sudo tee -a /private/etc/hosts; \
-		echo "$(GREEN)$${FULL_DOMAIN} added to /private/etc/hosts.$(NC)"; \
+		echo "Adding $${FULL_DOMAIN} to /private/etc/hosts (sudo required)..."; \
+		if echo "127.0.0.1       $${FULL_DOMAIN}" | sudo tee -a /private/etc/hosts > /dev/null 2>&1; then \
+			echo "$(GREEN)✓ $${FULL_DOMAIN} added to /private/etc/hosts.$(NC)"; \
+		else \
+			echo "$(RED)✗ Failed to add DNS entry. Please run 'make dns' manually.$(NC)"; \
+			exit 1; \
+		fi; \
 	fi
 
-dns-linux: setup
+# DNS entries for Linux (automated version, no prompts)
+dns-linux-auto: setup
 	@if [ ! -f $(ENV_FILE) ]; then \
 		echo "$(RED).env file not found. Run 'make setup' first.$(NC)"; \
 		exit 1; \
@@ -139,12 +141,16 @@ dns-linux: setup
 		exit 1; \
 	fi; \
 	FULL_DOMAIN="$${DOMAIN_PREFIX_VALUE}.$${DOMAIN_VALUE}"; \
-	echo "Adding $${FULL_DOMAIN} to /etc/hosts..."; \
 	if grep -q "127.0.0.1.*$${FULL_DOMAIN}" /etc/hosts; then \
-		echo "$(YELLOW)$${FULL_DOMAIN} already exists in /etc/hosts.$(NC)"; \
+		echo "$(GREEN)✓ $${FULL_DOMAIN} already exists in /etc/hosts.$(NC)"; \
 	else \
-		sudo bash -c "echo '127.0.0.1       $${FULL_DOMAIN}' >> /etc/hosts"; \
-		echo "$(GREEN)$${FULL_DOMAIN} added to /etc/hosts.$(NC)"; \
+		echo "Adding $${FULL_DOMAIN} to /etc/hosts (sudo required)..."; \
+		if sudo bash -c "echo '127.0.0.1       $${FULL_DOMAIN}' >> /etc/hosts" 2>&1; then \
+			echo "$(GREEN)✓ $${FULL_DOMAIN} added to /etc/hosts.$(NC)"; \
+		else \
+			echo "$(RED)✗ Failed to add DNS entry. Please run 'make dns' manually.$(NC)"; \
+			exit 1; \
+		fi; \
 	fi
 
 dns-windows: setup
@@ -206,7 +212,8 @@ check-dns: setup
 					fi; \
 				else \
 					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
-					echo "$(YELLOW)Run 'make dns' to add local DNS entry$(NC)"; \
+					echo "$(YELLOW)Adding DNS entry automatically...$(NC)"; \
+					$(MAKE) dns-auto; \
 				fi; \
 			elif command -v dig > /dev/null 2>&1; then \
 				DNS_RESULT=$$(dig +short "$${FULL_DOMAIN}" 2>/dev/null | head -1); \
@@ -219,7 +226,8 @@ check-dns: setup
 					fi; \
 				else \
 					echo "$(RED)✗ DNS record not found for $${FULL_DOMAIN}$(NC)"; \
-					echo "$(YELLOW)Run 'make dns' to add local DNS entry$(NC)"; \
+					echo "$(YELLOW)Adding DNS entry automatically...$(NC)"; \
+					$(MAKE) dns-auto; \
 				fi; \
 			else \
 				echo "$(YELLOW)⚠ nslookup or dig not available, skipping DNS check$(NC)"; \
