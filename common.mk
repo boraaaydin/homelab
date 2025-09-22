@@ -27,7 +27,7 @@ define get_domain_vars
 endef
 
 # Common phony targets
-.PHONY: setup up down restart logs ps clean dns check-dns
+.PHONY: setup up down restart logs ps clean dns check-dns common-help
 
 # Setup .env file from example
 setup:
@@ -217,3 +217,16 @@ Available commands:
   dns            - Auto-detect OS and add domain to hosts file
   check-dns      - Check DNS record for the service domain
 endef
+
+# Common help target that can be used or extended
+common-help:
+	@echo "Available commands:"
+	@echo "  setup          - Setup .env file from .env.example"
+	@echo "  up             - Start containers (includes DNS check)"
+	@echo "  down           - Stop containers"
+	@echo "  restart        - Restart containers"
+	@echo "  logs           - View container logs"
+	@echo "  ps             - List containers"
+	@echo "  clean          - Stop and remove containers and volumes"
+	@echo "  dns            - Auto-detect OS and add domain to hosts file"
+	@echo "  check-dns      - Check DNS record for the service domain"

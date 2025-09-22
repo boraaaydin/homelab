@@ -1,6 +1,9 @@
 # Variables
 APP_NAME := seq
 
+# Default target
+all: help
+
 # Include common definitions and targets
 include ../common.mk
 
@@ -10,13 +13,8 @@ include ../common.mk
 # Get full domain for DNS entries
 FULL_DOMAIN = seq.$(BASE_DOMAIN)
 
-# Default target
-all: help
-
 # Help message
-help:
-	@echo "Available commands:"
-	@$(info $(COMMON_HELP))
+help: common-help
 	@echo "  help         - Show this help message"
 
 # Override up command to show access URLs

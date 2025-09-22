@@ -1,6 +1,9 @@
 # Variables
 APP_NAME := postgresql
 
+# Default target
+all: help
+
 # Include common definitions and targets
 include ../common.mk
 
@@ -10,13 +13,8 @@ ifneq (,$(wildcard .env))
     export
 endif
 
-# Default target
-all: help
-
 # Help message
-help:
-	@echo "Available commands:"
-	@$(info $(COMMON_HELP))
+help: common-help
 	@echo "  check-ready    - Check if PostgreSQL is ready"
 	@echo "  help           - Show this help message"
 
