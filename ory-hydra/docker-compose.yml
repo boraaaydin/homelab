@@ -8,27 +8,6 @@ services:
     networks:
       - shared_network
     pids_limit: 100
-    depends_on:
-      hydra_postgres:
-        condition: service_healthy
-
-  hydra_postgres:
-    container_name: hydra-postgres
-    image: postgres:16
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${HYDRA_DATABASE}
-    volumes:
-      - ${DATA_PATH}/postgres:/var/lib/postgresql/data
-    networks:
-      - shared_network
-    pids_limit: 100
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${HYDRA_DATABASE}"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   hydra:
     container_name: ${HYDRA_CONTAINER}
@@ -48,17 +27,16 @@ services:
     restart: unless-stopped
     depends_on:
       - hydra-migrate
-      - hydra_postgres
     networks:
       - shared_network
     pids_limit: 100
     labels:
       - 'traefik.enable=true'
       # Public API (4444)
-      - 'traefik.http.routers.hydra-public.rule=Host(`${DOMAIN_PREFIX}-public.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-public.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public.entrypoints=web'
       - 'traefik.http.routers.hydra-public.service=hydra-public'
-      - 'traefik.http.routers.hydra-public-secure.rule=Host(`${DOMAIN_PREFIX}-public.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-public-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-public-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-public-secure.tls=true'
       - 'traefik.http.routers.hydra-public-secure.tls.certresolver=cloudflare'
@@ -66,10 +44,10 @@ services:
       - 'traefik.http.services.hydra-public.loadbalancer.server.port=4444'
 
       # Admin API (4445)
-      - 'traefik.http.routers.hydra-admin.rule=Host(`${DOMAIN_PREFIX}-admin.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-admin.rule=Host(`${DOMAIN_PREFIX_ADMIN}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-admin.entrypoints=web'
       - 'traefik.http.routers.hydra-admin.service=hydra-admin'
-      - 'traefik.http.routers.hydra-admin-secure.rule=Host(`${DOMAIN_PREFIX}-admin.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-admin-secure.rule=Host(`${DOMAIN_PREFIX_ADMIN}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-admin-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-admin-secure.tls=true'
       - 'traefik.http.routers.hydra-admin-secure.tls.certresolver=cloudflare'
@@ -77,10 +55,10 @@ services:
       - 'traefik.http.services.hydra-admin.loadbalancer.server.port=4445'
 
       # Token API (5555)
-      - 'traefik.http.routers.hydra-token.rule=Host(`${DOMAIN_PREFIX}-token.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-token.rule=Host(`${DOMAIN_PREFIX_TOKEN}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-token.entrypoints=web'
       - 'traefik.http.routers.hydra-token.service=hydra-token'
-      - 'traefik.http.routers.hydra-token-secure.rule=Host(`${DOMAIN_PREFIX}-token.${DOMAIN}`)'
+      - 'traefik.http.routers.hydra-token-secure.rule=Host(`${DOMAIN_PREFIX_TOKEN}.${DOMAIN}`)'
       - 'traefik.http.routers.hydra-token-secure.entrypoints=websecure'
       - 'traefik.http.routers.hydra-token-secure.tls=true'
       - 'traefik.http.routers.hydra-token-secure.tls.certresolver=cloudflare'
