@@ -22,7 +22,7 @@ make down
 
 ### Domain-based (with Traefik)
 - Configure `DOMAIN_PREFIX` and `DOMAIN` in `.env`
-- Access via `https://agent-zero.yourdomain.com`
+- Access via `https://{DOMAIN_PREFIX}.yourdomain.com`
 - Requires Traefik to be running
 
 ### Localhost
