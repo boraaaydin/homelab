@@ -27,10 +27,12 @@ Analyze the provided docker-compose.yml file and:
 - Extract service names, environment variables, and port configurations
 - Generate .env.example with all required environment variables
 - Create Makefile following repository standards (setup, up, down, restart, logs, clean targets)
+    - Use `common.mk` file for common tasks. Don' t dublicate codes in makefile.
     - DNS files are as listed:
         - Mac: /private/etc/hosts
         - Linux : /etc/hosts
         - Windows: C:\Windows\System32\drivers\etc\hosts.
+- If volume mapping is needed for users data, create a .gitignore file and add mapped folders
 - Generate docker-compose.ports.yml for localhost access with HOST_PORT mappings
 - Create concise README.md explaining how to use the application and its dependencies
 - Ensure compliance with CLAUDE.md requirements (shared_network, Traefik integration, etc.)

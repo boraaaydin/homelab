@@ -1,0 +1,5 @@
+# Agent Zero data directories
+data/
+
+# Environment file (contains user-specific configuration)
+.env

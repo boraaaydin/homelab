@@ -1,0 +1,4 @@
+services:
+  agent-zero:
+    ports:
+      - "${HOST_PORT:-50001}:80"

@@ -1,0 +1,25 @@
+services:
+  agent-zero:
+    image: agent0ai/agent-zero:${DOCKER_TAG:-latest}
+    container_name: agent-zero
+    restart: unless-stopped
+    volumes:
+      - ./data/memory:/memory
+      - ./data/knowledge:/knowledge
+      - ./data/instruments:/instruments
+      - ./data/tmp:/tmp
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ:-UTC}
+    networks:
+      - shared_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.agent-zero.rule=Host(`${DOMAIN_PREFIX:-agent-zero}.${DOMAIN}`)"
+      - "traefik.http.routers.agent-zero.entrypoints=websecure"
+      - "traefik.http.routers.agent-zero.tls.certresolver=cloudflare"
+      - "traefik.http.services.agent-zero.loadbalancer.server.port=80"
+
+networks:
+  shared_network:
+    external: true

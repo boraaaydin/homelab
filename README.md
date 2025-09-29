@@ -87,6 +87,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | Application | Description | Category |
 |------------|-------------|----------|
 | [**OpenWebUI**](https://openwebui.com/) | Advanced AI chat interface | AI |
+| [**Agent Zero**](https://github.com/agent0ai/agent-zero) | Personal organic agentic framework with Speech-to-Text/Text-to-Speech | AI |
 | [**N8N**](https://n8n.io/) | Powerful workflow automation platform | Automation |
 
 ### 🖥 Development Tools
