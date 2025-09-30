@@ -1,0 +1,4 @@
+services:
+  stirling-pdf:
+    ports:
+      - "${HOST_PORT}:8080"

@@ -1,0 +1,5 @@
+# Environment file
+.env
+
+# Stirling-PDF data directories
+StirlingPDF/

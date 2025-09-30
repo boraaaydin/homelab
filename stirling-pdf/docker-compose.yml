@@ -1,0 +1,35 @@
+services:
+  stirling-pdf:
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:${DOCKER_TAG}
+    container_name: stirling-pdf
+    volumes:
+      - ./StirlingPDF/trainingData:/usr/share/tessdata # Required for extra OCR languages
+      - ./StirlingPDF/extraConfigs:/configs
+      - ./StirlingPDF/customFiles:/customFiles/
+      - ./StirlingPDF/logs:/logs/
+      - ./StirlingPDF/pipeline:/pipeline/
+    environment:
+      - DISABLE_ADDITIONAL_FEATURES=${DISABLE_ADDITIONAL_FEATURES}
+      - LANGS=${LANGS}
+    networks:
+      - shared_network
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.stirling-pdf.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.stirling-pdf.entrypoints=web'
+      - 'traefik.http.routers.stirling-pdf.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.stirling-pdf-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.stirling-pdf-secure.entrypoints=websecure'
+      - 'traefik.http.routers.stirling-pdf-secure.tls=true'
+      - 'traefik.http.routers.stirling-pdf-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.stirling-pdf.loadbalancer.server.port=8080'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+networks:
+  shared_network:
+    external: true

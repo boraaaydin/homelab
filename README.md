@@ -99,6 +99,11 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**MongoExpress**](https://github.com/mongo-express/mongo-express) | Mongodb admin interface | Database Management |
 | [**Seq**](https://datalust.co/seq) | Centralized structured logging platform | Logging |
 
+### 📄 Document Management
+| Application | Description | Category |
+|------------|-------------|----------|
+| [**Stirling-PDF**](https://stirlingpdf.com/) | Locally hosted PDF manipulation tool | PDF Tools |
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
