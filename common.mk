@@ -1,6 +1,10 @@
 # Common Makefile definitions and targets for homelab services
 # Include this file in service-specific Makefiles
 
+# Shell configuration (fix for Windows compatibility)
+SHELL := /bin/bash
+.SHELLFLAGS := -ec
+
 # Docker commands
 DOCKER := docker --context=default
 DOCKER_COMPOSE := docker --context=default compose
