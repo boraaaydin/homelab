@@ -2,8 +2,8 @@
 # Include this file in service-specific Makefiles
 
 # Shell configuration (fix for Windows compatibility)
-SHELL := /bin/bash
-.SHELLFLAGS := -ec
+SHELL := /bin/sh
+.SHELLFLAGS := -c
 
 # Docker commands
 DOCKER := docker --context=default
@@ -35,13 +35,10 @@ endef
 
 # Setup .env file from example
 setup:
-	@if [ ! -f $(ENV_FILE) ]; then \
-		echo "Creating .env file from $(ENV_EXAMPLE_FILE)..."; \
-		cp $(ENV_EXAMPLE_FILE) $(ENV_FILE); \
-		echo "$(GREEN).env file created successfully. Please edit it with your configuration.$(NC)"; \
-	else \
-		echo "$(YELLOW).env file already exists.$(NC)"; \
-	fi
+	@test -f $(ENV_FILE) && echo "$(YELLOW).env file already exists.$(NC)" || \
+	(echo "Creating .env file from $(ENV_EXAMPLE_FILE)..." && \
+	cp $(ENV_EXAMPLE_FILE) $(ENV_FILE) && \
+	echo "$(GREEN).env file created successfully. Please edit it with your configuration.$(NC)")
 
 # Start containers (can be overridden for complex services)
 up: setup check-dns

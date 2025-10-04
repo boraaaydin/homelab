@@ -26,15 +26,11 @@ help:
 # Override setup command (n8n expects .env to exist)
 setup:
 	@echo "Setting up $(APP_NAME)..."
-	@if [ ! -f $(ENV_FILE) ]; then \
-		if [ -f $(ENV_EXAMPLE_FILE) ]; then \
-			cp $(ENV_EXAMPLE_FILE) $(ENV_FILE); \
-			echo "$(GREEN).env file created from $(ENV_EXAMPLE_FILE)$(NC)"; \
-		else \
-			echo "$(RED)Error: .env file not found and no .env.example available.$(NC)"; \
-			exit 1; \
-		fi; \
-	fi
+	@test -f $(ENV_FILE) || \
+	(test -f $(ENV_EXAMPLE_FILE) && \
+	cp $(ENV_EXAMPLE_FILE) $(ENV_FILE) && \
+	echo "$(GREEN).env file created from $(ENV_EXAMPLE_FILE)$(NC)" || \
+	(echo "$(RED)Error: .env file not found and no .env.example available.$(NC)" && exit 1))
 	@echo "$(GREEN)$(APP_NAME) setup completed successfully.$(NC)"
 
 # Override up command to start traefik first
