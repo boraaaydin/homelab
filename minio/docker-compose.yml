@@ -2,6 +2,7 @@ services:
   minio:
     container_name: minio
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    command: server /data --console-address ":9001"
     volumes:
       - './minio_data:/data'
       - ./config/minio-cors.json:/cors.json
@@ -9,19 +10,34 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_DEFAULT_BUCKETS=${MINIO_DEFAULT_BUCKETS}
+      - MINIO_BROWSER_REDIRECT_URL=https://${MINIO_CONSOLE_DOMAIN_PREFIX}.${DOMAIN}
     labels:
       - 'traefik.enable=true'
-      # HTTP Router
+      # HTTP Router - API (9000)
       - 'traefik.http.routers.minio.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.minio.entrypoints=web'
       - 'traefik.http.routers.minio.middlewares=redirect-to-https'
-      # HTTPS Router
+      - 'traefik.http.routers.minio.service=minio'
+      # HTTPS Router - API (9000)
       - 'traefik.http.routers.minio-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.minio-secure.entrypoints=websecure'
       - 'traefik.http.routers.minio-secure.tls=true'
       - 'traefik.http.routers.minio-secure.tls.certresolver=cloudflare'
-      # Service
+      - 'traefik.http.routers.minio-secure.service=minio'
+      # HTTP Router - Console (9001)
+      - 'traefik.http.routers.minio-console.rule=Host(`${MINIO_CONSOLE_DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.minio-console.entrypoints=web'
+      - 'traefik.http.routers.minio-console.middlewares=redirect-to-https'
+      - 'traefik.http.routers.minio-console.service=minio-console'
+      # HTTPS Router - Console (9001)
+      - 'traefik.http.routers.minio-console-secure.rule=Host(`${MINIO_CONSOLE_DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.minio-console-secure.entrypoints=websecure'
+      - 'traefik.http.routers.minio-console-secure.tls=true'
+      - 'traefik.http.routers.minio-console-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.minio-console-secure.service=minio-console'
+      # Services
       - 'traefik.http.services.minio.loadbalancer.server.port=9000'
+      - 'traefik.http.services.minio-console.loadbalancer.server.port=9001'
       # Middleware for HTTPS redirect
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
       - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
@@ -44,14 +60,14 @@ services:
       echo 'Waiting for MinIO...';
       sleep 20;
       echo 'MinIO is up!';
-      cat /cors.json;
+      cat /cors.xml;
       echo 'Setting up MinIO...';
       mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
       mc mb -p myminio/${MINIO_DEFAULT_BUCKETS} &&
-      mc cors set myminio/${MINIO_DEFAULT_BUCKETS} /cors.json;
+      mc cors set myminio/${MINIO_DEFAULT_BUCKETS} /cors.xml;
       "
     volumes:
-      - ./config/minio-cors.json:/cors.json
+      - ./config/minio-cors.xml:/cors.xml
     networks:
       - shared_network
 
