@@ -5,7 +5,6 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - './minio_data:/data'
-      - ./config/minio-cors.json:/cors.json
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -60,14 +59,15 @@ services:
       echo 'Waiting for MinIO...';
       sleep 20;
       echo 'MinIO is up!';
-      cat /cors.xml;
       echo 'Setting up MinIO...';
       mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
       mc mb -p myminio/${MINIO_DEFAULT_BUCKETS} &&
+      echo 'Applying CORS configuration...';
       mc cors set myminio/${MINIO_DEFAULT_BUCKETS} /cors.xml;
+      echo 'CORS configuration applied successfully!';
       "
     volumes:
-      - ./config/minio-cors.xml:/cors.xml
+      - ./config/minio-cors.xml:/cors.xml:ro
     networks:
       - shared_network
 
