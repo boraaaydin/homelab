@@ -1,0 +1,62 @@
+services:
+  ceph-demo:
+    container_name: ceph-demo
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    platform: linux/amd64
+    environment:
+      - CEPH_DAEMON=DEMO
+      - MON_IP=${MON_IP}
+      - CEPH_PUBLIC_NETWORK=${CEPH_PUBLIC_NETWORK}
+      - CEPH_DEMO_UID=${CEPH_DEMO_UID}
+      - CEPH_DEMO_ACCESS_KEY=${CEPH_DEMO_ACCESS_KEY}
+      - CEPH_DEMO_SECRET_KEY=${CEPH_DEMO_SECRET_KEY}
+      - CEPH_DEMO_BUCKET=${CEPH_DEMO_BUCKET}
+      - RGW_NAME=${RGW_NAME}
+      - NETWORK_AUTO_DETECT=4
+      - MON_DATA_AVAIL_CRIT=1
+    volumes:
+      - ceph_data:/var/lib/ceph
+      - ceph_config:/etc/ceph
+    networks:
+      - shared_network
+    privileged: true
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router - Dashboard (8443)
+      - 'traefik.http.routers.ceph-dashboard.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ceph-dashboard.entrypoints=web'
+      - 'traefik.http.routers.ceph-dashboard.middlewares=redirect-to-https'
+      - 'traefik.http.routers.ceph-dashboard.service=ceph-dashboard'
+      # HTTPS Router - Dashboard (8443)
+      - 'traefik.http.routers.ceph-dashboard-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ceph-dashboard-secure.entrypoints=websecure'
+      - 'traefik.http.routers.ceph-dashboard-secure.tls=true'
+      - 'traefik.http.routers.ceph-dashboard-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.ceph-dashboard-secure.service=ceph-dashboard'
+      # Services
+      - 'traefik.http.services.ceph-dashboard.loadbalancer.server.port=8443'
+      - 'traefik.http.services.ceph-dashboard.loadbalancer.server.scheme=https'
+      # HTTP Router - S3 Gateway (8000)
+      - 'traefik.http.routers.ceph-s3.rule=Host(`${S3_DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ceph-s3.entrypoints=web'
+      - 'traefik.http.routers.ceph-s3.middlewares=redirect-to-https'
+      - 'traefik.http.routers.ceph-s3.service=ceph-s3'
+      # HTTPS Router - S3 Gateway (8000)
+      - 'traefik.http.routers.ceph-s3-secure.rule=Host(`${S3_DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.ceph-s3-secure.entrypoints=websecure'
+      - 'traefik.http.routers.ceph-s3-secure.tls=true'
+      - 'traefik.http.routers.ceph-s3-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.ceph-s3-secure.service=ceph-s3'
+      # Services
+      - 'traefik.http.services.ceph-s3.loadbalancer.server.port=8000'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+volumes:
+  ceph_data:
+  ceph_config:
+
+networks:
+  shared_network:
+    external: true

@@ -66,6 +66,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**Traefik**](https://traefik.io/) | Modern reverse proxy and load balancer | Infrastructure |
 | [**Minio**](https://min.io/) | S3 Compatible Object Storage | Object Storage |
 | [**SeaweedFS**](https://github.com/seaweedfs/seaweedfs) | Fast distributed storage system with S3 API | Object Storage |
+| [**Ceph**](https://ceph.io/) | Unified distributed storage with S3-compatible object storage | Distributed Storage |
 | [**Ory/Hydra**](https://www.ory.sh/hydra) | Oauth2 Provider | Authentication |
 
 ### 🗄️ Database Systems

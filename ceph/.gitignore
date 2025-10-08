@@ -1,0 +1,3 @@
+# Ceph data and config directories
+ceph_data/
+ceph_config/

@@ -1,0 +1,5 @@
+services:
+  ceph-demo:
+    ports:
+      - "${HOST_PORT_DASHBOARD:-8443}:8443"
+      - "${HOST_PORT_S3:-8000}:8000"
