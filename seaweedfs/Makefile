@@ -18,7 +18,13 @@ setup:
 	@mkdir -p config
 	@if [ ! -f config/s3.json ]; then \
 		echo "Creating S3 configuration file..."; \
-		echo '{"identities":[{"name":"default","credentials":[{"accessKey":"'$$(grep '^S3_ACCESS_KEY' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"' || echo "your_access_key_here")'","secretKey":"'$$(grep '^S3_SECRET_KEY' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"' || echo "your_secret_key_here")'"}],"actions":["Admin","Read","Write"]}]}' > config/s3.json; \
+		S3_ACCESS_KEY=$$(grep '^S3_ACCESS_KEY' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'); \
+		S3_SECRET_KEY=$$(grep '^S3_SECRET_KEY' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'); \
+		if [ -z "$$S3_ACCESS_KEY" ] || [ -z "$$S3_SECRET_KEY" ]; then \
+			echo "$(RED)ERROR: S3_ACCESS_KEY and S3_SECRET_KEY must be set in $(ENV_FILE)$(NC)"; \
+			exit 1; \
+		fi; \
+		echo '{"identities":[{"name":"default","credentials":[{"accessKey":"'$$S3_ACCESS_KEY'","secretKey":"'$$S3_SECRET_KEY'"}],"actions":["Admin","Read","Write"]}]}' > config/s3.json; \
 		echo "$(GREEN)S3 configuration created at config/s3.json$(NC)"; \
 	else \
 		echo "$(YELLOW)S3 configuration already exists at config/s3.json$(NC)"; \

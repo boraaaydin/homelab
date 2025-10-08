@@ -101,7 +101,7 @@ services:
   seaweedfs-s3:
     container_name: seaweedfs-s3
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
-    command: s3 -filer=seaweedfs-filer:8888 -ip.bind=0.0.0.0 -config=/etc/seaweedfs/s3.json
+    command: s3 -filer=seaweedfs-filer:8888 -ip.bind=0.0.0.0 -config=/etc/seaweedfs/s3.json -allowedOrigins=*
     volumes:
       - './config/s3.json:/etc/seaweedfs/s3.json:ro'
     depends_on:
@@ -122,7 +122,15 @@ services:
       - 'traefik.http.routers.seaweedfs-s3-secure.entrypoints=websecure'
       - 'traefik.http.routers.seaweedfs-s3-secure.tls=true'
       - 'traefik.http.routers.seaweedfs-s3-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.seaweedfs-s3-secure.middlewares=seaweedfs-s3-cors'
       - 'traefik.http.routers.seaweedfs-s3-secure.service=seaweedfs-s3'
+      # CORS Middleware
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,HEAD'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolalloworiginlist=http://localhost:3301,https://localhost:3301'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowheaders=*'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowcredentials=true'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolmaxage=100'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.addvaryheader=true'
       # Services
       - 'traefik.http.services.seaweedfs-s3.loadbalancer.server.port=8333'
     healthcheck:
