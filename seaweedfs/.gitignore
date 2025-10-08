@@ -1,0 +1,9 @@
+# SeaweedFS data directories
+seaweedfs_data/
+filer_data/
+
+# Configuration
+config/s3.json
+
+# Environment file
+.env

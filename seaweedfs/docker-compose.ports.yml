@@ -1,0 +1,16 @@
+services:
+  seaweedfs-master:
+    ports:
+      - "${HOST_PORT_MASTER:-9333}:9333"
+
+  seaweedfs-volume:
+    ports:
+      - "${HOST_PORT_VOLUME:-8080}:8080"
+
+  seaweedfs-filer:
+    ports:
+      - "${HOST_PORT_FILER:-8888}:8888"
+
+  seaweedfs-s3:
+    ports:
+      - "${HOST_PORT_S3:-8333}:8333"

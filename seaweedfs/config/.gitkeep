@@ -1,0 +1,2 @@
+# This file keeps the config directory in git
+# s3.json will be generated automatically by 'make setup'
