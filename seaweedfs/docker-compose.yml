@@ -101,7 +101,7 @@ services:
   seaweedfs-s3:
     container_name: seaweedfs-s3
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
-    command: s3 -filer=seaweedfs-filer:8888 -ip.bind=0.0.0.0 -config=/etc/seaweedfs/s3.json -allowedOrigins=*
+    command: s3 -filer=seaweedfs-filer:8888 -ip.bind=0.0.0.0 -config=/etc/seaweedfs/s3.json -allowedOrigins=${CORS_ALLOWED_ORIGINS}
     volumes:
       - './config/s3.json:/etc/seaweedfs/s3.json:ro'
     depends_on:

@@ -3,7 +3,9 @@
     "allow": [
       "WebFetch(domain:github.com)",
       "Read(//Users/bora/Desktop/**)",
-      "Bash(docker logs:*)"
+      "Bash(docker logs:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker ps:*)"
     ],
     "deny": [],
     "ask": []
