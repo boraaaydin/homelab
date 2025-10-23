@@ -115,7 +115,7 @@ services:
       # HTTP Router - S3 (8333)
       - 'traefik.http.routers.seaweedfs-s3.rule=Host(`${S3_DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.seaweedfs-s3.entrypoints=web'
-      - 'traefik.http.routers.seaweedfs-s3.middlewares=redirect-to-https'
+      - 'traefik.http.routers.seaweedfs-s3.middlewares=seaweedfs-s3-cors,redirect-to-https'
       - 'traefik.http.routers.seaweedfs-s3.service=seaweedfs-s3'
       # HTTPS Router - S3 (8333)
       - 'traefik.http.routers.seaweedfs-s3-secure.rule=Host(`${S3_DOMAIN_PREFIX}.${DOMAIN}`)'
@@ -126,8 +126,9 @@ services:
       - 'traefik.http.routers.seaweedfs-s3-secure.service=seaweedfs-s3'
       # CORS Middleware
       - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,HEAD'
-      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolalloworiginlist=http://localhost:3301,https://localhost:3301'
-      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowheaders=*'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolalloworiginlist=${CORS_ALLOWED_ORIGINS}'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowheaders=Authorization,Content-Type,X-Requested-With'
+      - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolexposeheaders=ETag,Content-Length,Content-Type'
       - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolallowcredentials=true'
       - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.accesscontrolmaxage=100'
       - 'traefik.http.middlewares.seaweedfs-s3-cors.headers.addvaryheader=true'
