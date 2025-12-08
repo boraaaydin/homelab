@@ -68,11 +68,7 @@ clean:
 	@for dir in */; do \
 		if [ -f "$$dir/docker-compose.yml" ]; then \
 			echo "Processing $$dir..."; \
-			if [ -f "$$dir/.env.local" ]; then \
-				cd "$$dir" && $(DOCKER_COMPOSE) --env-file .env.local down --remove-orphans; \
-			else \
-				cd "$$dir" && $(DOCKER_COMPOSE) down --remove-orphans; \
-			fi; \
+			cd "$$dir" && $(DOCKER_COMPOSE) down --remove-orphans; \
 			cd ..; \
 			echo "$(GREEN)Cleaned $$dir$(NC)"; \
 		fi \

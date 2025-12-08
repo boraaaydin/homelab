@@ -19,7 +19,7 @@ YELLOW := \033[0;33m
 NC := \033[0m
 
 # Common variables (can be overridden in service Makefiles)
-ENV_FILE := .env.local
+ENV_FILE := .env
 ENV_EXAMPLE_FILE := .env.example
 
 # Common function to extract and validate domain variables
@@ -38,12 +38,12 @@ endef
 
 # Note: setup target is defined in setup-interactive.mk
 
-# Check if .env.local file exists
+# Check if .env file exists
 check-env:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED)Error: .env.local file not found!$(NC)\n"; \
+		printf "$(RED)Error: .env file not found!$(NC)\n"; \
 		echo ""; \
-		printf "$(YELLOW)Please create .env.local file using one of these methods:$(NC)\n"; \
+		printf "$(YELLOW)Please create .env file using one of these methods:$(NC)\n"; \
 		echo ""; \
 		printf "  $(GREEN)Option 1 - Interactive Setup (Recommended):$(NC)\n"; \
 		echo "    make setup"; \
@@ -59,18 +59,18 @@ check-env:
 up: check-env check-dns
 	@docker context use default > /dev/null 2>&1 || true
 	@echo "Starting $(APP_NAME)..."
-	@# Source .env.local file to get HOST_PORT
+	@# Source .env file to get HOST_PORT
 	@if [ -f $(ENV_FILE) ]; then \
 		set -a; . $(ENV_FILE); set +a; \
 		if [ -n "$${HOST_PORT}" ]; then \
 			printf "$(YELLOW)Port $${HOST_PORT} will be exposed$(NC)\n"; \
-			$(DOCKER_COMPOSE) --env-file $(ENV_FILE) -f docker-compose.yml -f docker-compose.ports.yml up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
+			$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.ports.yml up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
 		else \
 			printf "$(YELLOW)No HOST_PORT defined, service will only be available through Traefik$(NC)\n"; \
-			$(DOCKER_COMPOSE) --env-file $(ENV_FILE) up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
+			$(DOCKER_COMPOSE) up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
 		fi; \
 	else \
-		$(DOCKER_COMPOSE) --env-file $(ENV_FILE) up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
+		$(DOCKER_COMPOSE) up -d || { printf "$(RED)Error starting $(APP_NAME).$(NC)\n"; exit 1; }; \
 	fi
 	@printf "$(GREEN)$(APP_NAME) started successfully.$(NC)\n"
 
@@ -80,7 +80,7 @@ run: up
 # Stop containers
 down:
 	@echo "Stopping $(APP_NAME)..."
-	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) down
+	@$(DOCKER_COMPOSE) down
 	@printf "$(GREEN)$(APP_NAME) stopped successfully.$(NC)\n"
 
 # Restart containers
@@ -89,23 +89,23 @@ restart: down up
 # View container logs
 logs:
 	@echo "Viewing $(APP_NAME) logs..."
-	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f
+	@$(DOCKER_COMPOSE) logs -f
 
 # List containers
 ps:
 	@echo "Listing $(APP_NAME) containers..."
-	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) ps
+	@$(DOCKER_COMPOSE) ps
 
 # Stop and remove containers and volumes
 clean:
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
-	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) down -v --remove-orphans
+	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@printf "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)\n"
 
 # Auto-detect OS and run appropriate DNS command (silent version for automation)
 dns:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED).env.local file not found. Run 'make setup' first.$(NC)\n"; \
+		printf "$(RED).env file not found. Run 'make setup' first.$(NC)\n"; \
 		exit 1; \
 	fi
 	@OS=$$(uname -s); \
@@ -128,7 +128,7 @@ dns:
 # DNS entries for macOS (automated version with auto sudo)
 dns-mac-auto:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED).env.local file not found. Run 'make setup' first.$(NC)\n"; \
+		printf "$(RED).env file not found. Run 'make setup' first.$(NC)\n"; \
 		exit 1; \
 	fi; \
 	$(get_domain_vars); \
@@ -149,7 +149,7 @@ dns-mac-auto:
 # DNS entries for Linux (automated version with auto sudo)
 dns-linux-auto:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED).env.local file not found. Run 'make setup' first.$(NC)\n"; \
+		printf "$(RED).env file not found. Run 'make setup' first.$(NC)\n"; \
 		exit 1; \
 	fi; \
 	$(get_domain_vars); \
@@ -170,7 +170,7 @@ dns-linux-auto:
 # DNS entries for Windows (automated version)
 dns-windows-auto:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED).env.local file not found. Run 'make setup' first.$(NC)\n"; \
+		printf "$(RED).env file not found. Run 'make setup' first.$(NC)\n"; \
 		exit 1; \
 	fi; \
 	$(get_domain_vars); \
@@ -199,7 +199,7 @@ dns-windows-auto:
 # Check DNS record for the service
 check-dns:
 	@if [ ! -f $(ENV_FILE) ]; then \
-		printf "$(RED).env.local file not found. Run 'make setup' first.$(NC)\n"; \
+		printf "$(RED).env file not found. Run 'make setup' first.$(NC)\n"; \
 		exit 1; \
 	fi; \
 	DOMAIN_PREFIX_VALUE=$$(grep '^DOMAIN_PREFIX' $(ENV_FILE) 2>/dev/null | cut -d '=' -f2 | tr -d ' "'"'"''); \

@@ -11,7 +11,7 @@ This is a homelab infrastructure repository containing Docker-based self-hosted 
 - **Traefik** serves as the central reverse proxy and SSL certificate manager
 - **shared_network** Docker network connects all services
 - Applications can be accessed via domain names (with SSL) or localhost ports
-- Configuration uses `.env.local` files based on `.env.example` templates
+- Configuration uses `.env` files based on `.env.example` templates
 
 ### Key Infrastructure Components
 - **traefik/**: Central reverse proxy with Cloudflare DNS challenge for SSL
@@ -38,7 +38,7 @@ Navigate to any application directory and use:
 # Show available commands
 make
 
-# Setup application (copies .env.example to .env.local, generates secrets if needed)
+# Setup application (copies .env.example to .env, generates secrets if needed)
 make setup
 
 # Start services
@@ -66,7 +66,7 @@ make dns
 
 ## Environment Configuration
 
-Each application requires a `.env.local` file created from `.env.example`. Common patterns:
+Each application requires a `.env` file created from `.env.example`. Common patterns:
 
 ### Domain-based Access
 ```
@@ -102,7 +102,7 @@ Most applications depend on the shared infrastructure:
 1. Run `make install` from repository root to create shared network
 2. Configure Traefik first if using domain-based access
 3. For each application:
-   - Copy `.env.example` to `.env.local` and configure (or run `make setup` for interactive configuration)
+   - Copy `.env.example` to `.env` and configure
    - Run `make setup` if available (generates secrets)
    - Configure DNS records or local hosts entries
    - Run `make up` to start services

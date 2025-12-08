@@ -13,7 +13,7 @@ BLUE ?= \033[0;34m
 NC ?= \033[0m
 
 # Variables
-ENV_FILE ?= .env.local
+ENV_FILE ?= .env
 ENV_EXAMPLE_FILE ?= .env.example
 
 # Override the default setup target with interactive setup
@@ -21,10 +21,10 @@ ENV_EXAMPLE_FILE ?= .env.example
 
 setup:
 	@if [ -f $(ENV_FILE) ]; then \
-		printf "$(YELLOW).env.local file already exists.$(NC)\n"; \
+		printf "$(YELLOW).env file already exists.$(NC)\n"; \
 		read -p "Do you want to reconfigure it? (y/N): " reconfigure; \
 		if [ "$${reconfigure}" != "y" ] && [ "$${reconfigure}" != "Y" ]; then \
-			printf "$(GREEN)Keeping existing .env.local file.$(NC)\n"; \
+			printf "$(GREEN)Keeping existing .env file.$(NC)\n"; \
 			exit 0; \
 		fi; \
 	fi; \
@@ -189,5 +189,5 @@ setup:
 	fi; \
 	\
 	echo ""; \
-	printf "$(GREEN).env.local file created successfully!$(NC)\n"; \
+	printf "$(GREEN).env file created successfully!$(NC)\n"; \
 	printf "$(YELLOW)You can now run 'make up' to start the service.$(NC)\n"
