@@ -1,0 +1,7 @@
+# Environment file
+.env
+
+# Docker volumes - mapped folders
+server/
+collector/hotdir/
+collector/outputs/

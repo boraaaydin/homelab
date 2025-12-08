@@ -1,0 +1,38 @@
+name: anythingllm
+
+services:
+  anything-llm:
+    container_name: anythingllm
+    image: mintplexlabs/anythingllm:${DOCKER_TAG}
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - "./.env:/app/server/.env"
+      - "./server/storage:/app/server/storage"
+      - "./collector/hotdir/:/app/collector/hotdir"
+      - "./collector/outputs/:/app/collector/outputs"
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      - STORAGE_DIR=${STORAGE_DIR:-/app/server/storage}
+    env_file:
+      - .env
+    networks:
+      - shared_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.anythingllm.entrypoints=web'
+      - 'traefik.http.routers.anythingllm.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.anythingllm-secure.entrypoints=websecure'
+      - 'traefik.http.routers.anythingllm-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.anythingllm-secure.tls=true'
+      - 'traefik.http.routers.anythingllm-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.services.anythingllm.loadbalancer.server.port=3001'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.routers.anythingllm.middlewares=redirect-to-https'
+
+networks:
+  shared_network:
+    external: true

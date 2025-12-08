@@ -1,0 +1,4 @@
+services:
+  anything-llm:
+    ports:
+      - "${HOST_PORT}:3001"
