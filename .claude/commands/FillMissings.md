@@ -26,8 +26,14 @@ Analyze the provided docker-compose.yml file and:
 
 - Extract service names, environment variables, and port configurations
 - Generate .env.example with all required environment variables
+    - Domain variables must always follow this format:
+      ```
+      # Domain Settings
+      DOMAIN=example.com
+      DOMAIN_PREFIX=appdomainprefix
+      ```
 - Create Makefile following repository standards (setup, up, down, restart, logs, clean targets)
-    - Use `common.mk` file for common tasks. Don' t dublicate codes in makefile.
+    - Use `common.mk` file for common tasks. Don't duplicate codes in Makefile.
     - DNS files are as listed:
         - Mac: /private/etc/hosts
         - Linux : /etc/hosts

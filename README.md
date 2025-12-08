@@ -41,20 +41,27 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 
 4. **Deploy Applications**
    - Navigate to your chosen application directory
-   - Make a copy of .env.example with name .env:
+   - Run the interactive setup:
      ```bash
-     cp .env.example .env
-     # Configure application-specific settings
+     make setup
      ```
-   - Configure DNS records using our [DNS setup guide](/docs/DNS.md)
-   - Run app
-      ```bash
-      make up
-      ```
-   - For available commmands:
-      ```bash
-      make 
-      ```
+   - Follow the prompts to choose between domain or port-based access:
+     - **Domain access**: Service available via `https://subdomain.yourdomain.com`
+     - **Port access**: Service available via `http://localhost:PORT`
+   - Start the application:
+     ```bash
+     make up
+     # or
+     make run
+     ```
+     > **Note**: `make up` (or `make run`) will fail if `.env` file doesn't exist. You must run `make setup` first.
+
+   - For available commands:
+     ```bash
+     make
+     ```
+
+   See [Setup Guide](SETUP-INTERACTIVE.md) for detailed configuration options.
 
 
 ## 📦 Available Applications
@@ -89,6 +96,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | Application | Description | Category |
 |------------|-------------|----------|
 | [**OpenWebUI**](https://openwebui.com/) | Advanced AI chat interface | AI |
+| [**AnythingLLM**](https://useanything.com/) | Full-stack application to chat with documents using any LLM | AI |
 | [**Agent Zero**](https://www.agent-zero.ai/) | Personal organic agentic framework with Speech-to-Text/Text-to-Speech | AI |
 | [**N8N**](https://n8n.io/) | Powerful workflow automation platform | Automation |
 
