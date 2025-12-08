@@ -30,8 +30,8 @@ A comprehensive solution for deploying and managing self-hosted applications wit
    - Set up Cloudflare credentials following our [detailed guide](/docs/Cloudflare.md)
    - Configure the environment:
      ```bash
-     cp traefik/.env.example traefik/.env
-     # Edit .env with your settings
+     cp traefik/.env.example traefik/.env.local
+     # Edit .env.local with your settings
      ```
 
 3. **Run Installation**
@@ -54,7 +54,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
      # or
      make run
      ```
-     > **Note**: `make up` (or `make run`) will fail if `.env` file doesn't exist. You must run `make setup` first.
+     > **Note**: `make up` (or `make run`) will fail if `.env.local` file doesn't exist. You must run `make setup` first.
 
    - For available commands:
      ```bash
