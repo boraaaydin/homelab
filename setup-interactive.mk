@@ -21,12 +21,8 @@ ENV_EXAMPLE_FILE ?= .env.example
 
 setup:
 	@if [ -f $(ENV_FILE) ]; then \
-		printf "$(YELLOW).env file already exists.$(NC)\n"; \
-		read -p "Do you want to reconfigure it? (y/N): " reconfigure; \
-		if [ "$${reconfigure}" != "y" ] && [ "$${reconfigure}" != "Y" ]; then \
-			printf "$(GREEN)Keeping existing .env file.$(NC)\n"; \
-			exit 0; \
-		fi; \
+		printf "$(GREEN).env file already exists. Keeping existing configuration.$(NC)\n"; \
+		exit 0; \
 	fi; \
 	\
 	if [ ! -f $(ENV_EXAMPLE_FILE) ]; then \
