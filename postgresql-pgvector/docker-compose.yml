@@ -23,9 +23,9 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.pgvector.entrypoints=web'
-      - 'traefik.http.routers.pgvector.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.pgvector.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.pgvector-secure.entrypoints=websecure'
-      - 'traefik.http.routers.pgvector-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.pgvector-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.pgvector-secure.tls=true'
       - 'traefik.http.routers.pgvector-secure.tls.certresolver=cloudflare'
       - 'traefik.http.services.pgvector.loadbalancer.server.port=5432'

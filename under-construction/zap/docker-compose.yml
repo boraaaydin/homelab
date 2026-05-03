@@ -23,11 +23,11 @@ services:
       - 'traefik.enable=true'
       # HTTP router
       - 'traefik.http.routers.zap.entrypoints=web'
-      - 'traefik.http.routers.zap.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.zap.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.zap.middlewares=redirect-to-https'
       # HTTPS router
       - 'traefik.http.routers.zap-secure.entrypoints=websecure'
-      - 'traefik.http.routers.zap-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.zap-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
       - 'traefik.http.routers.zap-secure.tls=true'
       - 'traefik.http.routers.zap-secure.tls.certresolver=cloudflare'
       # Service configuration
