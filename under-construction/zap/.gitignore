@@ -1,0 +1,8 @@
+# Environment file
+.env
+
+# ZAP data directory (contains certificates and session data)
+data/
+
+# Docker volumes
+*.log

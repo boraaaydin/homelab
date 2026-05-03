@@ -1,0 +1,40 @@
+services:
+  zap:
+    container_name: zap
+    image: ghcr.io/zaproxy/zaproxy:${ZAP_VERSION:-stable}
+    user: zap
+    command: zap-webswing.sh
+    restart: unless-stopped
+    volumes:
+      - ./data:/zap/wrk:rw
+    environment:
+      - TZ=${TZ:-UTC}
+    networks:
+      - shared_network
+    security_opt:
+      - no-new-privileges
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/zap/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - 'traefik.enable=true'
+      # HTTP router
+      - 'traefik.http.routers.zap.entrypoints=web'
+      - 'traefik.http.routers.zap.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.zap.middlewares=redirect-to-https'
+      # HTTPS router
+      - 'traefik.http.routers.zap-secure.entrypoints=websecure'
+      - 'traefik.http.routers.zap-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.zap-secure.tls=true'
+      - 'traefik.http.routers.zap-secure.tls.certresolver=cloudflare'
+      # Service configuration
+      - 'traefik.http.services.zap.loadbalancer.server.port=8080'
+      # Redirect middleware
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+
+networks:
+  shared_network:
+    external: true
