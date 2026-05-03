@@ -1,0 +1,41 @@
+services:
+  pgvector:
+    image: pgvector/pgvector:${DOCKER_TAG}
+    container_name: pgvector
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - shared_network
+    volumes:
+      - pgvector_data:/var/lib/postgresql
+    deploy:
+      resources:
+        limits:
+          pids: 200
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.pgvector.entrypoints=web'
+      - 'traefik.http.routers.pgvector.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.pgvector-secure.entrypoints=websecure'
+      - 'traefik.http.routers.pgvector-secure.rule=Host(`${DOMAIN_PREFIX}.${CUSTOMDOMAIN}`)'
+      - 'traefik.http.routers.pgvector-secure.tls=true'
+      - 'traefik.http.routers.pgvector-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.services.pgvector.loadbalancer.server.port=5432'
+      - 'traefik.http.middlewares.pgvector-redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.routers.pgvector.middlewares=pgvector-redirect-to-https'
+      
+networks:
+  shared_network:
+    external: true
+
+volumes:
+  pgvector_data:
+

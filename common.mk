@@ -34,9 +34,13 @@ define get_domain_vars
 endef
 
 # Common phony targets
-.PHONY: setup up run down restart logs ps clean dns check-dns check-env common-help
+.PHONY: setup up run down restart logs ps clean dns check-dns check-env common-help use-default-context
 
 # Note: setup target is defined in setup-interactive.mk
+
+# Switch to default Docker context
+use-default-context:
+	@docker context use default > /dev/null 2>&1 || true
 
 # Check if .env file exists
 check-env:
@@ -56,8 +60,7 @@ check-env:
 	fi
 
 # Start containers (can be overridden for complex services)
-up: check-env check-dns
-	@docker context use default > /dev/null 2>&1 || true
+up: use-default-context check-env check-dns
 	@echo "Starting $(APP_NAME)..."
 	@# Source .env file to get HOST_PORT
 	@if [ -f $(ENV_FILE) ]; then \
@@ -78,7 +81,7 @@ up: check-env check-dns
 run: up
 
 # Stop containers
-down:
+down: use-default-context
 	@echo "Stopping $(APP_NAME)..."
 	@$(DOCKER_COMPOSE) down
 	@printf "$(GREEN)$(APP_NAME) stopped successfully.$(NC)\n"
@@ -87,17 +90,17 @@ down:
 restart: down up
 
 # View container logs
-logs:
+logs: use-default-context
 	@echo "Viewing $(APP_NAME) logs..."
 	@$(DOCKER_COMPOSE) logs -f
 
 # List containers
-ps:
+ps: use-default-context
 	@echo "Listing $(APP_NAME) containers..."
 	@$(DOCKER_COMPOSE) ps
 
 # Stop and remove containers and volumes
-clean:
+clean: use-default-context
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@printf "$(GREEN)$(APP_NAME) cleaned successfully.$(NC)\n"

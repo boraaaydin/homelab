@@ -5,7 +5,10 @@
       "Read(//Users/bora/Desktop/**)",
       "Bash(docker logs:*)",
       "Bash(docker compose up:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "WebFetch(domain:www.zaproxy.org)",
+      "Bash(docker volume *)",
+      "Bash(make up *)"
     ],
     "deny": [],
     "ask": []

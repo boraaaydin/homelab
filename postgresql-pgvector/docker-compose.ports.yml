@@ -1,0 +1,4 @@
+services:
+  pgvector:
+    ports:
+      - "${HOST_PORT}:5432" 

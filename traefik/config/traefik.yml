@@ -11,6 +11,12 @@ api:
 accessLog:
   filePath: "/var/log/access.log"
   format: "json"
+  fields:
+    defaultMode: keep
+  rotation:
+    maxSize: 100 # MB
+    maxBackups: 3
+    compress: true
 entryPoints:
   web:
     address: :80
