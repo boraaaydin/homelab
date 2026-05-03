@@ -27,13 +27,13 @@ setup:
 	@echo "$(GREEN)$(APP_NAME) setup completed.$(NC)"
 
 # Override up command (traefik doesn't use ports.yml)
-up: setup
+up: use-default-context setup
 	@echo "Starting $(APP_NAME)..."
 	@$(DOCKER_COMPOSE) up -d
 	@echo "$(GREEN)$(APP_NAME) started successfully.$(NC)"
 
 # Override clean command for traefik-specific cleanup
-clean:
+clean: use-default-context
 	@echo "Stopping and removing $(APP_NAME) containers..."
 	@$(DOCKER_COMPOSE) down --remove-orphans
 	@echo "Cleaning up $(APP_NAME) data..."

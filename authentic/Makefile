@@ -35,14 +35,14 @@ setup:
 	@echo "$(GREEN)$(APP_NAME) setup completed. Please edit .env file with your configuration.$(NC)"
 
 # Override up command to pull images first
-up: setup
+up: use-default-context setup
 	@echo "Starting $(APP_NAME)..."
 	@$(DOCKER_COMPOSE) pull
 	@$(DOCKER_COMPOSE) up -d
 	@echo "$(GREEN)$(APP_NAME) started successfully.$(NC)"
 
 # Override clean command for authentic-specific cleanup
-clean:
+clean: use-default-context
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@rm -rf ./media ./certs ./custom-templates

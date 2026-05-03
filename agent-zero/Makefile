@@ -32,7 +32,7 @@ setup-all: setup data-dirs
 		echo "$(YELLOW).env file already exists.$(NC)"; \
 	fi
 
-clean:
+clean: use-default-context
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@rm -rf ./data

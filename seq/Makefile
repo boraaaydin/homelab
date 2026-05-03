@@ -18,7 +18,7 @@ help: common-help
 	@echo "  help         - Show this help message"
 
 # Override up command to show access URLs
-up: setup
+up: use-default-context setup
 	@echo "Starting $(APP_NAME)..."
 	@# Source .env file to get HOST_PORT
 	@if [ -f $(ENV_FILE) ]; then \
@@ -40,7 +40,7 @@ up: setup
 	fi
 
 # Override clean command for seq-specific volume cleanup
-clean:
+clean: use-default-context
 	@echo "Stopping and removing $(APP_NAME) containers and volumes..."
 	@$(DOCKER_COMPOSE) down -v --remove-orphans
 	@docker --context=default volume rm seq_seq_data 2>/dev/null || true

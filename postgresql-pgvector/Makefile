@@ -29,7 +29,7 @@ check-ready: use-default-context
 	fi
 
 # Override up command to start traefik first
-up: setup use-default-context
+up: use-default-context setup
 	@echo "Starting $(APP_NAME)..."
 	@cd ../traefik && $(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting traefik.$(NC)"; exit 1; }
 	@# Source .env file to get HOST_PORT

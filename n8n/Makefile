@@ -34,7 +34,7 @@ setup:
 	@echo "$(GREEN)$(APP_NAME) setup completed successfully.$(NC)"
 
 # Override up command to start traefik first
-up: setup
+up: use-default-context setup
 	@echo "Starting $(APP_NAME)..."
 	@cd ../traefik && $(DOCKER_COMPOSE) up -d || { echo "$(RED)Error starting traefik.$(NC)"; exit 1; }
 	@# Source .env file to get HOST_PORT
@@ -53,7 +53,7 @@ up: setup
 	@echo "$(GREEN)$(APP_NAME) started successfully.$(NC)"
 
 # Override logs command to show specific container logs
-logs:
+logs: use-default-context
 	@$(DOCKER_COMPOSE) logs -f n8n
 
 # View traefik logs
