@@ -1,0 +1,62 @@
+# Optional Cal.com API v2 service.
+#
+# Cal.com does not publish a prebuilt image for API v2, so this overlay builds it
+# from the Cal.com source tree. Clone it first and point CALCOM_SOURCE_DIR at it:
+#
+#   git clone --depth 1 https://github.com/calcom/cal.com.git source
+#   make up-api
+#
+# The API is reachable in-cluster only; the web container proxies it through
+# /api/v2 (REWRITE_API_V2_PREFIX=true), so no extra domain or certificate is needed.
+services:
+  calcom-api:
+    build:
+      context: ${CALCOM_SOURCE_DIR}
+      dockerfile: apps/api/v2/Dockerfile
+      platforms:
+        - ${DOCKER_PLATFORM}
+      args:
+        DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+        DATABASE_DIRECT_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    image: calcom-api:${DOCKER_TAG}
+    platform: ${DOCKER_PLATFORM}
+    container_name: calcom-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - API_PORT=${API_PORT}
+      # Overridden by docker-compose.api.ports.yml in port mode
+      - API_URL=https://${DOMAIN_PREFIX}.${DOMAIN}
+      - WEB_APP_URL=https://${DOMAIN_PREFIX}.${DOMAIN}
+      - API_KEY_PREFIX=${API_KEY_PREFIX}
+      # Shared PostgreSQL (../postgresql)
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_DIRECT_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_READ_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_WRITE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      # Shared Valkey (../valkey) - Redis compatible
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+      # Secrets
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - CALCOM_LICENSE_KEY=${CALCOM_LICENSE_KEY}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - IS_E2E=false
+      - IS_TEAM_BILLING_ENABLED=${IS_TEAM_BILLING_ENABLED}
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${API_PORT}/api/v2/health > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - 'traefik.enable=false'

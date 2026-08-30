@@ -91,6 +91,7 @@ A comprehensive solution for deploying and managing self-hosted applications wit
 | [**Miniflux**](https://miniflux.app/) | RSS Reader | Content |
 | [**FreshRSS**](https://freshrss.org/) | RSS Reader | Content |
 | [**Ntyf**](https://ntfy.sh/) | Http based pub-sub notification service | Notification |
+| [**Cal.com**](https://cal.com/) | Open source scheduling and booking platform | Scheduling |
 
 ### 🤖 AI & Automation
 | Application | Description | Category |

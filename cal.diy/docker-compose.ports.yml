@@ -1,0 +1,12 @@
+# Localhost access. Applied by 'make up' whenever HOST_PORT is set, which is
+# also the case where the public URLs must point at localhost instead of the
+# domain, so they are overridden here rather than kept in .env.
+services:
+  calcom:
+    ports:
+      - "${HOST_PORT}:3000"
+    environment:
+      - NEXT_PUBLIC_WEBAPP_URL=http://localhost:${HOST_PORT}
+      - NEXT_PUBLIC_WEBSITE_URL=http://localhost:${HOST_PORT}
+      - NEXT_PUBLIC_API_V2_URL=http://localhost:${HOST_PORT}/api/v2
+      - NEXTAUTH_URL=http://localhost:${HOST_PORT}/api/auth

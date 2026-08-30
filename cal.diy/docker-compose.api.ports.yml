@@ -1,0 +1,8 @@
+# Localhost counterpart of docker-compose.api.yml, applied by 'make up-api'
+# when HOST_PORT is set. The API itself stays internal, only the URLs it hands
+# back to clients follow the localhost access method.
+services:
+  calcom-api:
+    environment:
+      - API_URL=http://localhost:${HOST_PORT}
+      - WEB_APP_URL=http://localhost:${HOST_PORT}

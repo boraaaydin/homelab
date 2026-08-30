@@ -81,6 +81,30 @@ HOST_PORT=8080
 # Access: localhost:8080
 ```
 
+### Derived URLs Belong in Compose, Not in `.env`
+
+Many applications need their own public URL as an environment variable (`APP_URL`, `SITE_URL`, `PUBLIC_URL`, `NEXTAUTH_URL`, `WEBHOOK_URL`, ...). Never store such a value in `.env.example` as a hardcoded literal, and never make the user keep it in sync by hand. `.env` holds only the access variables — `DOMAIN`, `DOMAIN_PREFIX`, `HOST_PORT` — and every URL is composed from them in the compose files:
+
+```yaml
+# docker-compose.yml - domain access
+    environment:
+      - APP_URL=https://${DOMAIN_PREFIX}.${DOMAIN}
+```
+
+```yaml
+# docker-compose.ports.yml - localhost access, overrides the same key
+    environment:
+      - APP_URL=http://localhost:${HOST_PORT}
+```
+
+This works because `docker-compose.ports.yml` is applied exactly when `HOST_PORT` is set, and a later compose file overrides same-key `environment` entries. So both access methods are handled with no manual editing, and the URL cannot drift from the way the service is actually reached — a mismatch typically breaks logins by redirecting to the wrong host.
+
+Rules that follow from this:
+- Put the derived URLs in `environment:`, not in `env_file:`, so they always win over any stale value.
+- Every URL key overridden in `docker-compose.yml` must also be overridden in `docker-compose.ports.yml`, otherwise port mode silently keeps the domain URL.
+- If an optional overlay (e.g. `docker-compose.api.yml`) also carries URLs, give it a matching `docker-compose.api.ports.yml` and apply it from the Makefile in the `HOST_PORT` branch.
+- Do not rely on variable expansion inside `.env` (`FOO=https://${DOMAIN_PREFIX}.${DOMAIN}`). Compose does expand it, but it is a property of the dotenv parser rather than of the compose file, and it splits the URL logic across two places.
+
 ### Traefik Configuration
 The traefik service requires Cloudflare credentials:
 ```

@@ -1,0 +1,68 @@
+services:
+  calcom:
+    image: ${DOCKER_IMAGE}:${DOCKER_TAG}
+    # Cal.com ships arch-specific tags, so the platform is pinned in the
+    # environment file alongside DOCKER_TAG instead of inferred from the host.
+    platform: ${DOCKER_PLATFORM}
+    container_name: calcom
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      # Shared PostgreSQL (../postgresql)
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_DIRECT_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      # Shared Valkey (../valkey) - Redis compatible
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}
+      # Public URLs, built from DOMAIN_PREFIX/DOMAIN and applied at container
+      # start, no rebuild needed. docker-compose.ports.yml overrides these with
+      # http://localhost:${HOST_PORT} when the service runs in port mode.
+      - NEXT_PUBLIC_WEBAPP_URL=https://${DOMAIN_PREFIX}.${DOMAIN}
+      - NEXT_PUBLIC_WEBSITE_URL=https://${DOMAIN_PREFIX}.${DOMAIN}
+      - NEXT_PUBLIC_API_V2_URL=https://${DOMAIN_PREFIX}.${DOMAIN}/api/v2
+      - NEXTAUTH_URL=https://${DOMAIN_PREFIX}.${DOMAIN}/api/auth
+      # API v2 upstream used by the /api/v2 rewrite (see docker-compose.api.yml)
+      - API_V2_URL=http://calcom-api:${API_PORT}/api/v2
+      - REWRITE_API_V2_PREFIX=${REWRITE_API_V2_PREFIX}
+      # Secrets
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - CALENDSO_ENCRYPTION_KEY=${CALENDSO_ENCRYPTION_KEY}
+      - CALCOM_LICENSE_KEY=${CALCOM_LICENSE_KEY}
+      - NEXT_PUBLIC_LICENSE_CONSENT=${NEXT_PUBLIC_LICENSE_CONSENT}
+      - CALCOM_TELEMETRY_DISABLED=${CALCOM_TELEMETRY_DISABLED}
+      - ORGANIZATIONS_ENABLED=${ORGANIZATIONS_ENABLED}
+      - LOG_LEVEL=${LOG_LEVEL}
+    networks:
+      - shared_network
+    pids_limit: 100
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/auth/login > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - 'traefik.enable=true'
+      # HTTP Router
+      - 'traefik.http.routers.calcom.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.calcom.entrypoints=web'
+      - 'traefik.http.routers.calcom.middlewares=redirect-to-https'
+      # HTTPS Router
+      - 'traefik.http.routers.calcom-secure.rule=Host(`${DOMAIN_PREFIX}.${DOMAIN}`)'
+      - 'traefik.http.routers.calcom-secure.entrypoints=websecure'
+      - 'traefik.http.routers.calcom-secure.tls=true'
+      - 'traefik.http.routers.calcom-secure.tls.certresolver=cloudflare'
+      # Service
+      - 'traefik.http.services.calcom.loadbalancer.server.port=3000'
+      # Middleware for HTTPS redirect
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
+
+networks:
+  shared_network:
+    external: true
